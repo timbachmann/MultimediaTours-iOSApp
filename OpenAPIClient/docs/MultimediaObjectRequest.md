@@ -1,0 +1,16 @@
+# MultimediaObjectRequest
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**type** | **String** |  | 
+**title** | **String** |  | [optional] 
+**date** | **String** |  | [optional] 
+**source** | **String** |  | [optional] 
+**position** | [**MultimediaObjectPosition**](MultimediaObjectPosition.md) |  | [optional] 
+**data** | **String** |  | 
+**author** | **String** |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+
