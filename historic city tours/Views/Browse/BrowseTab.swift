@@ -32,9 +32,9 @@ struct BrowseTab: View {
             }
                 
             List {
-                ForEach(searchResults) { tour in
+                ForEach(searchResults.filter{ result in result.generated == false }) { tour in
                     NavigationLink(destination: {
-                        TourDetailView(tour: tour)
+                        TourDetailView(selectedTab: $selectedTab, tour: tour)
                     }, label: {
                         VStack(alignment: .leading, spacing: 6.0) {
                             Text(tour.title.wrappedValue ?? "Tour")
@@ -55,9 +55,9 @@ struct BrowseTab: View {
                 }
                 
                 Section(header: Text("Generated Tours")) {
-                    ForEach(searchResults) { tour in
+                    ForEach(searchResults.filter{ result in result.generated == true }) { tour in
                         NavigationLink(destination: {
-                            TourDetailView(tour: tour)
+                            TourDetailView(selectedTab: $selectedTab, tour: tour)
                         }, label: {
                             VStack(alignment: .leading, spacing: 6.0) {
                                 Text(tour.title.wrappedValue ?? "Tour")

@@ -11,6 +11,7 @@ import AVKit
 
 struct MultimediaObjectDetailView: View {
     @State var multimediaObject: MultimediaObjectResponse
+    @EnvironmentObject var multimediaObjectData: MultimediaObjectData
     @State private var detailImage: Image?
     @State private var player: AVPlayer?
     
@@ -74,27 +75,26 @@ struct MultimediaObjectDetailView: View {
 extension MultimediaObjectDetailView {
     
     func loadFile() {
-            switch multimediaObject.type {
-                case .image:
-                    FilesAPI.multimediaObjectsFileIdGet(id: multimediaObject.id!) { (response, error) in
-                        let filePath = response!.path()
-                        detailImage = Image(uiImage: UIImage(contentsOfFile: filePath)!)
-                    }
-                case .video:
-                    FilesAPI.multimediaObjectsFileIdGet(id: multimediaObject.id!) { (response, error) in
-                        let filePath = response!.path()
-                        player = AVPlayer(url: URL(filePath: filePath))
+        if multimediaObject.type != .text {
+            multimediaObjectData.getFileForMultimediaObject(id: multimediaObject.id!, type: multimediaObject.type!) { (filePath, error) in
+                if filePath != nil {
+                    switch multimediaObject.type {
+                    case .image:
+                        detailImage = Image(uiImage: UIImage(contentsOfFile: filePath!)!)
+                        
+                    case .video:
+                        player = AVPlayer(url: URL(filePath: filePath!))
                         player?.play()
-                    }
-                case .audio:
-                    FilesAPI.multimediaObjectsFileIdGet(id: multimediaObject.id!) { (response, error) in
-                        let filePath = response!.path()
-                        player = AVPlayer(url: URL(filePath: filePath))
+                        
+                    case .audio:
+                        player = AVPlayer(url: URL(filePath: filePath!))
                         player?.play()
+                        
+                    default:
+                        return
                     }
-                default:
-                    return
-            
+                }
+            }
         }
     }
 }

@@ -10,10 +10,11 @@ import OpenAPIClient
 import MapKit
 
 struct TourDetailView: View {
+    @Binding var selectedTab: ContentView.Tab
     @Binding var tour: TourResponse
+    @EnvironmentObject var multimediaObjectData: MultimediaObjectData
     @State var multimediaObjects: [MultimediaObjectResponse] = []
     @State var isFetching: Bool = true
-    @State var selectedTab: ContentView.Tab = .browse
     @State private var showFavoritesOnly = false
     @State private var mapStyleSheetVisible: Bool = false
     @State private var locationButtonCount: Int = 0
@@ -39,7 +40,8 @@ struct TourDetailView: View {
             HStack{
                 Spacer()
                 Button(action: {
-                    
+                    $multimediaObjectData.activeTour.wrappedValue = tour
+                    $selectedTab.wrappedValue = .map
                 }, label: {
                     HStack {
                         Image(systemName: "arrow.triangle.turn.up.right.diamond")
@@ -101,10 +103,9 @@ extension TourDetailView {
     func fetchMultimediaObjects() {
         multimediaObjects = []
         for id in $tour.multimediaObjects.wrappedValue! {
-            MultimediaObjectsAPI.multimediaObjectsIdGet(id: id) { (response, error) in
-                if response != nil {
-                    multimediaObjects.append(response!)
-                }
+            let mmObject = multimediaObjectData.getMultimediaObject(id: id)
+            if mmObject != nil {
+                multimediaObjects.append(mmObject!)
             }
         }
         isFetching = false

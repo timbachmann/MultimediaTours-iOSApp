@@ -14,6 +14,7 @@ import ARKit
  */
 struct MapTab: View {
     
+    @EnvironmentObject var multimediaObjectData: MultimediaObjectData
     private let buttonSize: CGFloat = 48.0
     private let buttonOpacity: CGFloat = 0.95
     @Binding var selectedTab: ContentView.Tab
@@ -43,10 +44,27 @@ struct MapTab: View {
     
     var body: some View {
         NavigationView {
-            ZStack {
+            ZStack(alignment: .top) {
                 MapView(selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
                     .edgesIgnoringSafeArea(.top)
                 
+                if $multimediaObjectData.activeTour.wrappedValue == nil {
+                    ZStack {
+                        VStack(spacing: 12) {
+                            Text("Currently, there is no active tour to display. Try selecting one in the")
+                            Button(action: {
+                                $selectedTab.wrappedValue = .browse
+                            }, label: {
+                                Text("Browse Tab").foregroundStyle(Color.fireOrange)
+                            })
+                        }.padding()
+                        
+                    }
+                    .frame(width: 296, height: 124)
+                    .background(Color.white)
+                    .cornerRadius(8, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
+                    .shadow(radius: 12)
+                }
                 
                 if $mapStyleSheetVisible.wrappedValue {
                     ZStack {

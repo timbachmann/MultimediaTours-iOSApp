@@ -74,8 +74,8 @@ struct ContentView: View {
                 ZStack {
                     Color.sand.edgesIgnoringSafeArea(.all)
                     ZStack(alignment: .bottomTrailing) {
-                        Text("powered by vitrivr")
-                            .font(.system(size: 8))
+                        Text("powered by [vitrivr](https://vitrivr.org/)")
+                            .font(.system(size: 10))
                             .foregroundStyle(Color(.systemGray))
                             .padding(.top, 8)
                         VStack(alignment: .center, spacing: 12) {
