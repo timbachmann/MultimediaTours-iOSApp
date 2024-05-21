@@ -19,7 +19,6 @@ struct historic_city_toursApp: App {
                 .environmentObject(imageData)
                 .environmentObject(locationManagerModel)
                 .environmentObject(settingsModel)
-                .toolbarBackground(.red, for: .tabBar)
         }
     }
 }

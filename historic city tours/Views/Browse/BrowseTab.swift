@@ -82,6 +82,7 @@ struct BrowseTab: View {
             .background(Color.sand)
             .refreshable {
                 multimediaObjectData.refreshTours()
+                multimediaObjectData.refreshMultimediaObjects()
             }
             .searchable(text: $searchText)
         }

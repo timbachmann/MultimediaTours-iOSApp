@@ -12,7 +12,7 @@ import OpenAPIClient
 /**
  
  */
-struct MapView: UIViewRepresentable {
+struct MapViewDetail: UIViewRepresentable {
     typealias UIViewType = MKMapView
     
     var locationManager = CLLocationManager()
@@ -23,7 +23,7 @@ struct MapView: UIViewRepresentable {
     }
     
     @EnvironmentObject var multimediaObjectData: MultimediaObjectData
-    @Binding var activeTour: TourResponse?
+    @Binding var activeTour: TourResponse
     @Binding var selectedTab: ContentView.Tab
     @Binding var showDetail: Bool
     @Binding var detailId: String
@@ -34,14 +34,14 @@ struct MapView: UIViewRepresentable {
     let mapType: MKMapType
     let showsUserLocation: Bool
     let userTrackingMode: MKUserTrackingMode
-    let identifier = "Annotation"
-    let clusterIdentifier = "Cluster"
+    let identifier = "AnnotationDetail"
+    let clusterIdentifier = "ClusterDetail"
     let mapView = MKMapView()
     
     /**
      
      */
-    func makeUIView(context: UIViewRepresentableContext<MapView>) -> MKMapView {
+    func makeUIView(context: UIViewRepresentableContext<MapViewDetail>) -> MKMapView {
         setupManager()
         mapView.delegate = context.coordinator
         mapView.register(ImageAnnotationView.self, forAnnotationViewWithReuseIdentifier: identifier)
@@ -57,7 +57,7 @@ struct MapView: UIViewRepresentable {
     /**
      
      */
-    func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<MapView>) {
+    func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<MapViewDetail>) {
         if changeMapType {
             uiView.mapType = mapType
         }
@@ -73,7 +73,7 @@ struct MapView: UIViewRepresentable {
     }
     
     func addAnnotations(to mapView: MKMapView) {
-        for mmObjectId in activeTour?.multimediaObjects! ?? [] {
+        for mmObjectId in activeTour.multimediaObjects! {
             let mmObject = multimediaObjectData.getMultimediaObject(id: mmObjectId)
             
             if mmObject?.position != nil && mmObject != nil {
@@ -96,7 +96,7 @@ struct MapView: UIViewRepresentable {
     /**
      
      */
-    func makeCoordinator() -> MapView.Coordinator {
+    func makeCoordinator() -> MapViewDetail.Coordinator {
         Coordinator(self, activeTour: $activeTour, detailId: $detailId, showDetail: $showDetail, selectedTab: $selectedTab)
     }
     
@@ -104,14 +104,14 @@ struct MapView: UIViewRepresentable {
      
      */
     class Coordinator: NSObject, MKMapViewDelegate {
-        @Binding var activeTour: TourResponse?
+        @Binding var activeTour: TourResponse
         @Binding var showDetail: Bool
         @Binding var detailId: String
         @Binding var selectedTab: ContentView.Tab
-        private let mapView: MapView
+        private let mapView: MapViewDetail
         private var route: MKRoute? = nil
-        let identifier = "Annotation"
-        let clusterIdentifier = "Cluster"
+        let identifier = "AnnotationDetail"
+        let clusterIdentifier = "ClusterDetail"
         private let maxZoomLevel = 11
         private var previousZoomLevel: Int?
         private var currentZoomLevel: Int?  {
@@ -146,7 +146,7 @@ struct MapView: UIViewRepresentable {
         /**
          
          */
-        init(_ mapView: MapView, activeTour: Binding<TourResponse?>, detailId: Binding<String>, showDetail: Binding<Bool>, selectedTab: Binding<ContentView.Tab>) {
+        init(_ mapView: MapViewDetail, activeTour: Binding<TourResponse>, detailId: Binding<String>, showDetail: Binding<Bool>, selectedTab: Binding<ContentView.Tab>) {
             self.mapView = mapView
             _activeTour = activeTour
             _detailId = detailId

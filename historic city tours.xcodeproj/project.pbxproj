@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		22179B1F2BFD345B00FF0417 /* ClusterAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B1B2BFD345B00FF0417 /* ClusterAnnotationView.swift */; };
+		22179B202BFD345B00FF0417 /* ImageAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B1C2BFD345B00FF0417 /* ImageAnnotation.swift */; };
+		22179B212BFD345B00FF0417 /* ImageAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B1D2BFD345B00FF0417 /* ImageAnnotationView.swift */; };
+		22179B252BFD3E4F00FF0417 /* MapViewDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */; };
+		22179B272BFD43A800FF0417 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B262BFD43A800FF0417 /* UIImage+Extension.swift */; };
 		222FA2DA2BFB85E900686FAE /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 222FA2D92BFB85E900686FAE /* Launch Screen.storyboard */; };
 		229DAE0B2B952DCF0018FCB4 /* historic_city_toursApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DAE0A2B952DCF0018FCB4 /* historic_city_toursApp.swift */; };
 		229DAE0D2B952DCF0018FCB4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DAE0C2B952DCF0018FCB4 /* ContentView.swift */; };
@@ -26,6 +31,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		22179B1B2BFD345B00FF0417 /* ClusterAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClusterAnnotationView.swift; sourceTree = "<group>"; };
+		22179B1C2BFD345B00FF0417 /* ImageAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageAnnotation.swift; sourceTree = "<group>"; };
+		22179B1D2BFD345B00FF0417 /* ImageAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageAnnotationView.swift; sourceTree = "<group>"; };
+		22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewDetail.swift; sourceTree = "<group>"; };
+		22179B262BFD43A800FF0417 /* UIImage+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		222FA2D92BFB85E900686FAE /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		229DAE072B952DCF0018FCB4 /* historic city tours.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "historic city tours.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		229DAE0A2B952DCF0018FCB4 /* historic_city_toursApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = historic_city_toursApp.swift; sourceTree = "<group>"; };
@@ -57,6 +67,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		22179B1E2BFD345B00FF0417 /* Annotations */ = {
+			isa = PBXGroup;
+			children = (
+				22179B262BFD43A800FF0417 /* UIImage+Extension.swift */,
+				22179B1B2BFD345B00FF0417 /* ClusterAnnotationView.swift */,
+				22179B1C2BFD345B00FF0417 /* ImageAnnotation.swift */,
+				22179B1D2BFD345B00FF0417 /* ImageAnnotationView.swift */,
+			);
+			path = Annotations;
+			sourceTree = "<group>";
+		};
 		229DADFE2B952DCF0018FCB4 = {
 			isa = PBXGroup;
 			children = (
@@ -112,6 +133,7 @@
 		229DAE192B952E430018FCB4 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				22179B1E2BFD345B00FF0417 /* Annotations */,
 				229DAE1B2B952E940018FCB4 /* MapTab.swift */,
 				229DAE1D2B952ECA0018FCB4 /* MapView.swift */,
 			);
@@ -138,6 +160,7 @@
 				22C548BA2BE9047100DC1427 /* BrowseTab.swift */,
 				22C548CA2BE91CA300DC1427 /* TourDetailView.swift */,
 				22C548CC2BE92B0900DC1427 /* MultimediaObjectDetailView.swift */,
+				22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */,
 			);
 			path = Browse;
 			sourceTree = "<group>";
@@ -230,6 +253,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22179B202BFD345B00FF0417 /* ImageAnnotation.swift in Sources */,
 				22C548CD2BE92B0900DC1427 /* MultimediaObjectDetailView.swift in Sources */,
 				22C548C22BE9080500DC1427 /* SettingsModel.swift in Sources */,
 				229DAE0D2B952DCF0018FCB4 /* ContentView.swift in Sources */,
@@ -238,8 +262,12 @@
 				22C548BE2BE9051800DC1427 /* MultimediaObjectData.swift in Sources */,
 				22C548CB2BE91CA300DC1427 /* TourDetailView.swift in Sources */,
 				22C548C12BE9080500DC1427 /* LocationManagerModel.swift in Sources */,
+				22179B252BFD3E4F00FF0417 /* MapViewDetail.swift in Sources */,
+				22179B212BFD345B00FF0417 /* ImageAnnotationView.swift in Sources */,
+				22179B272BFD43A800FF0417 /* UIImage+Extension.swift in Sources */,
 				229DAE1C2B952E940018FCB4 /* MapTab.swift in Sources */,
 				22FB1B8B2BFB67D5006D94F2 /* Color+Extension.swift in Sources */,
+				22179B1F2BFD345B00FF0417 /* ClusterAnnotationView.swift in Sources */,
 				229DAE0B2B952DCF0018FCB4 /* historic_city_toursApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

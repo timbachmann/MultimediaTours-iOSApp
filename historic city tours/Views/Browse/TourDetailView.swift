@@ -35,7 +35,7 @@ struct TourDetailView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            MapView(selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
+            MapViewDetail(activeTour: $tour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
                         .frame(maxHeight: 250)
             HStack{
                 Spacer()
@@ -109,5 +109,6 @@ extension TourDetailView {
             }
         }
         isFetching = false
+        applyAnnotations = true
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 import AnyCodable
 #endif
 
-public struct TourResponse: Codable, JSONEncodable, Hashable, Identifiable {
+public struct TourResponse: Codable, JSONEncodable, Hashable, Identifiable, Equatable {
 
     public var id: String?
     public var title: String?

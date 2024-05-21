@@ -146,6 +146,7 @@ class MultimediaObjectData: ObservableObject {
             if let retrievedData = response {
                 self.multimediaObjects = retrievedData
                 self.multimediaObjects.sort(by: { $0.title ?? "a" < $1.title ?? "b" })
+                self.saveMultimediaObjectsToFile()
             }
         }
     }

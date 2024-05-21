@@ -45,8 +45,9 @@ struct MapTab: View {
     var body: some View {
         NavigationView {
             ZStack(alignment: .top) {
-                MapView(selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
+                MapView(activeTour: $multimediaObjectData.activeTour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
                     .edgesIgnoringSafeArea(.top)
+                    
                 
                 if $multimediaObjectData.activeTour.wrappedValue == nil {
                     ZStack {
@@ -92,6 +93,7 @@ struct MapTab: View {
         .edgesIgnoringSafeArea(.top)
         .onAppear(perform: {
             requestNotificationAuthorization()
+            applyAnnotations = true
         })
     }
 }
