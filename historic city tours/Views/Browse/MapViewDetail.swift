@@ -30,6 +30,8 @@ struct MapViewDetail: UIViewRepresentable {
     @Binding var zoomOnLocation: Bool
     @Binding var changeMapType: Bool
     @Binding var applyAnnotations: Bool
+    @Binding var applyRoute: Bool
+    @Binding var polylines: [MKPolyline?]
     let region: MKCoordinateRegion
     let mapType: MKMapType
     let showsUserLocation: Bool
@@ -44,8 +46,7 @@ struct MapViewDetail: UIViewRepresentable {
     func makeUIView(context: UIViewRepresentableContext<MapViewDetail>) -> MKMapView {
         setupManager()
         mapView.delegate = context.coordinator
-        mapView.register(ImageAnnotationView.self, forAnnotationViewWithReuseIdentifier: identifier)
-        mapView.register(ClusterAnnotationView.self, forAnnotationViewWithReuseIdentifier: clusterIdentifier)
+        mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: identifier)
         mapView.setRegion(region, animated: true)
         mapView.mapType = mapType
         mapView.showsUserLocation = showsUserLocation
@@ -70,6 +71,14 @@ struct MapViewDetail: UIViewRepresentable {
             addAnnotations(to: uiView)
             applyAnnotations = false
         }
+        
+        if applyRoute {
+            if !polylines.isEmpty {
+                removePolylines(from: uiView)
+            }
+            addRoute(to: uiView)
+            applyRoute = false
+        }
     }
     
     func addAnnotations(to mapView: MKMapView) {
@@ -77,18 +86,29 @@ struct MapViewDetail: UIViewRepresentable {
             let mmObject = multimediaObjectData.getMultimediaObject(id: mmObjectId)
             
             if mmObject?.position != nil && mmObject != nil {
-                var finalImage: UIImage = UIImage(systemName: "mappin.and.ellipse")!
-                finalImage = finalImage.scalePreservingAspectRatio(targetSize: CGSize(width: 48.0, height: 48.0))
-                
-                let annotation = ImageAnnotation(
-                    coordinate: CLLocationCoordinate2D(latitude: mmObject!.position!.lat, longitude: mmObject!.position!.lng),
-                    title: mmObject!.title!,
-                    image: finalImage,
-                    subtitle: mmObject!.source!,
-                    id: mmObject!.id!
-                )
+                let annotation = CustomPointAnnotation(coordinate: CLLocationCoordinate2D(latitude: mmObject!.position!.lat, longitude: mmObject!.position!.lng), title: mmObject!.title!, subtitle: mmObject!.source!, id: mmObject!.id!)
                 
                 mapView.addAnnotation(annotation)
+            }
+        }
+    }
+    
+    func addRoute(to mapView: MKMapView) {
+        var coordinates: Array<MKMapPoint> = []
+        for polyline in polylines {
+            if let polyline = polyline {
+                coordinates.append(contentsOf: Array(UnsafeBufferPointer(start: polyline.points(), count: polyline.pointCount)))
+                mapView.addOverlay(polyline)
+            }
+        }
+        let polygon = MKPolyline(points: coordinates, count: coordinates.count)
+        mapView.setVisibleMapRect(polygon.boundingMapRect, edgePadding: .init(top: 40, left: 40, bottom: 40, right: 40), animated: true)
+    }
+    
+    func removePolylines(from mapView: MKMapView) {
+        for polyline in polylines {
+            if let polyline = polyline {
+                mapView.removeOverlay(polyline)
             }
         }
     }
@@ -168,18 +188,13 @@ struct MapViewDetail: UIViewRepresentable {
          */
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
             
-            if annotation is ImageAnnotation {
-                let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier, for: annotation) as! ImageAnnotationView
+            if annotation is CustomPointAnnotation {
+                let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier, for: annotation) as! MKMarkerAnnotationView
                 annotationView.canShowCallout = true
+                annotationView.markerTintColor = UIColor(red: 0.97, green: 0.51, blue: 0.33, alpha: 1.00)
                 annotationView.annotation = annotation
-                annotationView.clusteringIdentifier = self.shouldCluster ? identifier : nil
                 return annotationView
                 
-            } else if annotation is MKClusterAnnotation {
-                let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: clusterIdentifier, for: annotation) as! ClusterAnnotationView
-                annotationView.canShowCallout = true
-                annotationView.annotation = annotation
-                return annotationView
             } else {
                 return nil
             }
@@ -189,14 +204,10 @@ struct MapViewDetail: UIViewRepresentable {
          
          */
         func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-            guard view is ImageAnnotationView else { return }
-            if view.annotation is ImageAnnotation {
+            guard view is MKMarkerAnnotationView else { return }
+            if view.annotation is CustomPointAnnotation {
                 view.canShowCallout = true
                 view.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
-                let directionsButton: UIButton = UIButton(type: .detailDisclosure)
-                directionsButton.tag = 123
-                directionsButton.setImage(UIImage(systemName: "arrow.triangle.turn.up.right.diamond"), for: .normal)
-                view.leftCalloutAccessoryView = directionsButton
             }
         }
         
@@ -204,19 +215,11 @@ struct MapViewDetail: UIViewRepresentable {
          
          */
         func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-            guard view is ImageAnnotationView else { return }
+            guard view is MKMarkerAnnotationView else { return }
             
-            if let imageAnnotation = view.annotation as? ImageAnnotation {
-                detailId = imageAnnotation.id!
-                
-                if let controlDetail = control as? UIButton {
-                    if controlDetail.tag == 123 {
-                        //self.navigationImage = self.mapImages[self.mapImages.firstIndex(where: {$0.id == imageAnnotation.id})!]
-                        selectedTab = .ar
-                    } else {
-                        showDetail = true
-                    }
-                }
+            if let customAnnotation = view.annotation as? CustomPointAnnotation {
+                detailId = customAnnotation.id!
+                showDetail = true
             }
         }
         

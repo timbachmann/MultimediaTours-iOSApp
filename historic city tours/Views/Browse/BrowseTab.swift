@@ -78,8 +78,6 @@ struct BrowseTab: View {
                     }
                 }.headerProminence(.increased)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.sand)
             .refreshable {
                 multimediaObjectData.refreshTours()
                 multimediaObjectData.refreshMultimediaObjects()
@@ -96,11 +94,6 @@ struct BrowseTab: View {
                 })
             }
         }
-        .background {
-            Color.sand
-                .ignoresSafeArea()
-        }
-        .toolbarBackground(Color.sand, for: .navigationBar)
     }
     
     var searchResults: Binding<[TourResponse]> {

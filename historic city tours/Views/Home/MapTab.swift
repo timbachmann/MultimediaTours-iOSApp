@@ -40,12 +40,14 @@ struct MapTab: View {
     @State private var startDate: Date = Date(timeIntervalSince1970: -3155673600.0)
     @State private var endDate: Date = Date()
     @State private var queryText: String = ""
+    @State private var applyRoute: Bool = false
+    @State private var polylines: [MKPolyline?] = []
     @State private var coordinateRegion = MKCoordinateRegion.init(center: CLLocationCoordinate2D(latitude: CLLocationManager().location?.coordinate.latitude ?? 47.559_601, longitude: CLLocationManager().location?.coordinate.longitude ?? 7.588_576), span: MKCoordinateSpan(latitudeDelta: 0.0051, longitudeDelta: 0.0051))
     
     var body: some View {
         NavigationView {
             ZStack(alignment: .top) {
-                MapView(activeTour: $multimediaObjectData.activeTour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
+                MapView(activeTour: $multimediaObjectData.activeTour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, applyRoute: $applyRoute, polylines: $polylines, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
                     .edgesIgnoringSafeArea(.top)
                     
                 
@@ -94,6 +96,7 @@ struct MapTab: View {
         .onAppear(perform: {
             requestNotificationAuthorization()
             applyAnnotations = true
+            fetchRoute()
         })
     }
 }
@@ -137,6 +140,53 @@ extension MapTab {
         nc.requestAuthorization(options: options) { granted, _ in
             print("\(#function) Permission granted: \(granted)")
             guard granted else { return }
+        }
+    }
+    
+    func fetchRoute() {
+        if $multimediaObjectData.activeTour.wrappedValue != nil {
+            let dispatchGroup = DispatchGroup()
+            var positions: [MKMapItem] = []
+            
+            let userPositionStart = MKMapItem(placemark: MKPlacemark(coordinate: locationManager.location!.coordinate))
+            userPositionStart.name = "Start"
+            positions.append(userPositionStart)
+            
+            for mmObjectId in $multimediaObjectData.activeTour.wrappedValue!.multimediaObjects! {
+                if let position = multimediaObjectData.getMultimediaObject(id: mmObjectId)?.position {
+                    let currItem = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationCoordinate2D(latitude: position.lat, longitude: position.lng)))
+                    currItem.name = mmObjectId
+                    positions.append(currItem)
+                }
+            }
+            
+            let userPositionFinish = MKMapItem(placemark: MKPlacemark(coordinate: locationManager.location!.coordinate))
+            userPositionFinish.name = "Finish"
+            positions.append(userPositionFinish)
+            
+            for i in 1 ..< positions.count {
+                dispatchGroup.enter()
+                
+                let request = MKDirections.Request()
+                request.transportType = .walking
+                request.source = positions[i-1]
+                request.destination = positions[i]
+                request.requestsAlternateRoutes = false
+                
+                let directions = MKDirections(request: request)
+                directions.calculate { response, error in
+                    defer { dispatchGroup.leave() }
+                    
+                    guard let mapRoute = response?.routes.first else {
+                        return
+                    }
+                    polylines.append(mapRoute.polyline)
+                }
+            }
+            
+            dispatchGroup.notify(queue: .main) {
+                applyRoute = true
+            }
         }
     }
 }

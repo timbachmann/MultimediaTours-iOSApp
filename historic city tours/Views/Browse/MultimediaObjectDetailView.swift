@@ -44,6 +44,14 @@ struct MultimediaObjectDetailView: View {
                         Spacer()
                     }
                 }
+                if multimediaObject.position != nil {
+                    Section(header: Text("Position")) {
+                        HStack{
+                            Text("\($multimediaObject.position.wrappedValue?.lat ?? 0.0), \($multimediaObject.position.wrappedValue?.lng ?? 0.0)")
+                            Spacer()
+                        }
+                    }
+                }
                 Section(header: Text("Source")) {
                     HStack{
                         Text($multimediaObject.source.wrappedValue ?? "")
@@ -57,15 +65,10 @@ struct MultimediaObjectDetailView: View {
                     }
                 }
             }
-            .background(Color.sand)
-            .scrollContentBackground(.hidden)
             Spacer()
         }
-        .background(Color.sand)
         .navigationTitle($multimediaObject.title.wrappedValue ?? "Tour")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Color.sand, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
         .onAppear(perform: {
             loadFile()
         })

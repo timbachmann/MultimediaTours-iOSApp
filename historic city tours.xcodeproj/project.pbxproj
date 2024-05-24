@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		22179B1F2BFD345B00FF0417 /* ClusterAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B1B2BFD345B00FF0417 /* ClusterAnnotationView.swift */; };
-		22179B202BFD345B00FF0417 /* ImageAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B1C2BFD345B00FF0417 /* ImageAnnotation.swift */; };
-		22179B212BFD345B00FF0417 /* ImageAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B1D2BFD345B00FF0417 /* ImageAnnotationView.swift */; };
+		22179B202BFD345B00FF0417 /* CustomPointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B1C2BFD345B00FF0417 /* CustomPointAnnotation.swift */; };
 		22179B252BFD3E4F00FF0417 /* MapViewDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */; };
 		22179B272BFD43A800FF0417 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B262BFD43A800FF0417 /* UIImage+Extension.swift */; };
 		222FA2DA2BFB85E900686FAE /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 222FA2D92BFB85E900686FAE /* Launch Screen.storyboard */; };
@@ -31,9 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		22179B1B2BFD345B00FF0417 /* ClusterAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClusterAnnotationView.swift; sourceTree = "<group>"; };
-		22179B1C2BFD345B00FF0417 /* ImageAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageAnnotation.swift; sourceTree = "<group>"; };
-		22179B1D2BFD345B00FF0417 /* ImageAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageAnnotationView.swift; sourceTree = "<group>"; };
+		22179B1C2BFD345B00FF0417 /* CustomPointAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomPointAnnotation.swift; sourceTree = "<group>"; };
 		22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewDetail.swift; sourceTree = "<group>"; };
 		22179B262BFD43A800FF0417 /* UIImage+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		222FA2D92BFB85E900686FAE /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
@@ -71,9 +67,7 @@
 			isa = PBXGroup;
 			children = (
 				22179B262BFD43A800FF0417 /* UIImage+Extension.swift */,
-				22179B1B2BFD345B00FF0417 /* ClusterAnnotationView.swift */,
-				22179B1C2BFD345B00FF0417 /* ImageAnnotation.swift */,
-				22179B1D2BFD345B00FF0417 /* ImageAnnotationView.swift */,
+				22179B1C2BFD345B00FF0417 /* CustomPointAnnotation.swift */,
 			);
 			path = Annotations;
 			sourceTree = "<group>";
@@ -253,7 +247,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22179B202BFD345B00FF0417 /* ImageAnnotation.swift in Sources */,
+				22179B202BFD345B00FF0417 /* CustomPointAnnotation.swift in Sources */,
 				22C548CD2BE92B0900DC1427 /* MultimediaObjectDetailView.swift in Sources */,
 				22C548C22BE9080500DC1427 /* SettingsModel.swift in Sources */,
 				229DAE0D2B952DCF0018FCB4 /* ContentView.swift in Sources */,
@@ -263,11 +257,9 @@
 				22C548CB2BE91CA300DC1427 /* TourDetailView.swift in Sources */,
 				22C548C12BE9080500DC1427 /* LocationManagerModel.swift in Sources */,
 				22179B252BFD3E4F00FF0417 /* MapViewDetail.swift in Sources */,
-				22179B212BFD345B00FF0417 /* ImageAnnotationView.swift in Sources */,
 				22179B272BFD43A800FF0417 /* UIImage+Extension.swift in Sources */,
 				229DAE1C2B952E940018FCB4 /* MapTab.swift in Sources */,
 				22FB1B8B2BFB67D5006D94F2 /* Color+Extension.swift in Sources */,
-				22179B1F2BFD345B00FF0417 /* ClusterAnnotationView.swift in Sources */,
 				229DAE0B2B952DCF0018FCB4 /* historic_city_toursApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

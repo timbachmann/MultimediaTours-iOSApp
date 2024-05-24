@@ -55,24 +55,21 @@ struct ContentView: View {
                         }
                         .tag(Tab.settings)
                 }
-                .toolbarBackground(Color.forest, for: .tabBar)
-                .toolbarBackground(.visible, for: .tabBar)
-                .toolbarColorScheme(.dark, for: .tabBar)
             }
             Button {
                 $showingGeneratePanel.wrappedValue.toggle()
             } label: {
                 Image(systemName: "plus")
-                    .frame(width: 58, height: 58)
+                    .frame(width: 52, height: 52)
                     .tint(Color.white)
             }
-            .frame(width: 58, height: 58)
+            .frame(width: 52, height: 52)
             .background(Color.fireOrange)
             .clipShape(Circle())
             .shadow(radius: 2)
             .sheet(isPresented: $showingGeneratePanel) {
                 ZStack {
-                    Color.sand.edgesIgnoringSafeArea(.all)
+                    Color.white.edgesIgnoringSafeArea(.all)
                     ZStack(alignment: .bottomTrailing) {
                         Text("powered by [vitrivr](https://vitrivr.org/)")
                             .font(.system(size: 10))
