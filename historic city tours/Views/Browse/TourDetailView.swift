@@ -49,20 +49,25 @@ struct TourDetailView: View {
                         .frame(maxHeight: 250)
             
             List {
-                Section(header: Text("Source")) {
-                    HStack{
-                        Text($tour.source.wrappedValue ?? "")
-                        Spacer()
-                    }
-                }
-                Section(header: Text("Author")) {
-                    HStack{
-                        Text($tour.author.wrappedValue ?? "")
-                        Spacer()
+                if $tour.author.wrappedValue != nil {
+                    Section(header: Text("Author")) {
+                        HStack{
+                            Text($tour.author.wrappedValue ?? "")
+                            Spacer()
+                        }
                     }
                 }
                 
-                if $tour.tags.wrappedValue != nil {
+                if $tour.source.wrappedValue != nil {
+                    Section(header: Text("Source")) {
+                        HStack{
+                            Text($tour.source.wrappedValue ?? "")
+                            Spacer()
+                        }
+                    }
+                }
+                
+                if $tour.tags.wrappedValue?.count != 0 {
                     Section(header: Text("Tags")) {
                         HStack{
                             ForEach($tour.tags.wrappedValue ?? [], id: \.self) { tag in
@@ -77,16 +82,18 @@ struct TourDetailView: View {
                     }
                 }
             
-                Section(header: Text("Multimedia-Objects")) {
-                    ForEach($multimediaObjects.wrappedValue, id: \.self) { mmO in
-                        NavigationLink(destination: {
-                            MultimediaObjectDetailView(multimediaObject: mmO)
-                        }, label: {
-                            HStack {
-                                Text(mmO.title ?? "")
-                                Spacer()
-                            }.redacted(reason: $isFetching.wrappedValue ? /*@START_MENU_TOKEN@*/.placeholder/*@END_MENU_TOKEN@*/ : [])
-                        })
+                if $tour.multimediaObjects.wrappedValue?.count != 0 {
+                    Section(header: Text("Multimedia-Objects")) {
+                        ForEach($multimediaObjects.wrappedValue, id: \.self) { mmO in
+                            NavigationLink(destination: {
+                                MultimediaObjectDetailView(multimediaObject: mmO)
+                            }, label: {
+                                HStack {
+                                    Text(mmO.title ?? "")
+                                    Spacer()
+                                }.redacted(reason: $isFetching.wrappedValue ? /*@START_MENU_TOKEN@*/.placeholder/*@END_MENU_TOKEN@*/ : [])
+                            })
+                        }
                     }
                 }
             }
@@ -101,6 +108,7 @@ struct TourDetailView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     $multimediaObjectData.activeTour.wrappedValue = tour
+                    $multimediaObjectData.activeTourObjectIndex.wrappedValue = 0
                     $selectedTab.wrappedValue = .map
                 }, label: {
                     HStack{
@@ -144,30 +152,34 @@ extension TourDetailView {
         
         if !positions.isEmpty {
             positions.append(positions.first!)
-        }
         
-        for i in 1 ..< positions.count {
-            dispatchGroup.enter()
-            
-            let request = MKDirections.Request()
-            request.transportType = .walking
-            request.source = positions[i-1]
-            request.destination = positions[i]
-            request.requestsAlternateRoutes = false
-            
-            let directions = MKDirections(request: request)
-            directions.calculate { response, error in
-                defer { dispatchGroup.leave() }
+            for i in 1 ..< positions.count {
+                dispatchGroup.enter()
                 
-                guard let mapRoute = response?.routes.first else {
-                    return
+                let request = MKDirections.Request()
+                request.transportType = .walking
+                request.source = positions[i-1]
+                request.destination = positions[i]
+                request.requestsAlternateRoutes = false
+                
+                let directions = MKDirections(request: request)
+                directions.calculate { response, error in
+                    defer { dispatchGroup.leave() }
+                    
+                    guard let mapRoute = response?.routes.first else {
+                        return
+                    }
+                    polylines.append(mapRoute.polyline)
                 }
-                polylines.append(mapRoute.polyline)
             }
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            applyRoute = true
+            dispatchGroup.notify(queue: .main) {
+                applyRoute = true
+            }
+            
+        } else {
+            dispatchGroup.notify(queue: .main) {
+                zoomOnLocation = true
+            }
         }
     }
 }

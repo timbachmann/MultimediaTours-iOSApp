@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 **title** | **String** |  | [optional] 
 **date** | **String** |  | [optional] 
 **source** | **String** |  | [optional] 
+**tags** | **[String]** |  | [optional] 
 **position** | [**MultimediaObjectPosition**](MultimediaObjectPosition.md) |  | [optional] 
 **data** | **String** |  | 
 **author** | **String** |  | [optional] 

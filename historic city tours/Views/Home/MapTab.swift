@@ -49,11 +49,48 @@ struct MapTab: View {
             ZStack(alignment: .top) {
                 MapView(activeTour: $multimediaObjectData.activeTour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, applyRoute: $applyRoute, polylines: $polylines, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
                     .edgesIgnoringSafeArea(.top)
+                
+                VStack {
+                    HStack {
+                        Spacer()
+                        VStack(alignment: .leading) {
+                            VStack(spacing: 0) {
+                                Button(action: {
+                                    mapStyleSheetVisible = !mapStyleSheetVisible
+                                }, label: {
+                                    Image(systemName: "map")
+                                        .padding()
+                                        .foregroundColor(Color.accentColor)
+                                })
+                                .frame(width: buttonSize, height: buttonSize)
+                                .background(Color(UIColor.systemBackground).opacity(buttonOpacity))
+                                .cornerRadius(10.0, corners: [.topLeft, .topRight])
+                                
+                                Divider()
+                                    .frame(width: buttonSize)
+                                    .background(Color(UIColor.systemBackground).opacity(buttonOpacity))
+                                
+                                Button(action: {
+                                    requestZoomOnLocation()
+                                }, label: {
+                                    Image(systemName: "location")
+                                        .padding()
+                                        .foregroundColor(Color.accentColor)
+                                })
+                                .frame(width: buttonSize, height: buttonSize)
+                                .background(Color(UIColor.systemBackground).opacity(buttonOpacity))
+                                .cornerRadius(10.0, corners: [.bottomLeft, .bottomRight])
+                            }
+                            Spacer()
+                        }
+                        .padding(8.0)
+                    }
+                }
                     
                 
                 if $multimediaObjectData.activeTour.wrappedValue == nil {
                     ZStack {
-                        VStack(spacing: 12) {
+                        VStack {
                             Text("Currently, there is no active tour to display. Try selecting one in the")
                             Button(action: {
                                 $selectedTab.wrappedValue = .browse
@@ -63,10 +100,33 @@ struct MapTab: View {
                         }.padding()
                         
                     }
-                    .frame(width: 296, height: 124)
-                    .background(Color.white)
+                    .frame(width: 264, height: 124)
+                    .background(Color(UIColor.systemBackground).opacity(0.95))
                     .cornerRadius(8, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
                     .shadow(radius: 12)
+                }
+                
+                if $multimediaObjectData.activeTour.wrappedValue != nil {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                multimediaObjectData.activeTourObjectIndex = nil
+                                multimediaObjectData.activeTour = nil
+                                applyRoute = true
+                                applyAnnotations = true
+                            }, label: {
+                                Image(systemName: "xmark")
+                                    .padding()
+                                    .foregroundColor(Color.accentColor)
+                            })
+                            .frame(width: 48.0, height: 48.0)
+                            .background(Color(UIColor.systemBackground).opacity(0.95))
+                            .cornerRadius(10.0, corners: .allCorners)
+                        }
+                    }
+                    .padding()
                 }
                 
                 if $mapStyleSheetVisible.wrappedValue {
@@ -83,6 +143,9 @@ struct MapTab: View {
                             }
                             .pickerStyle(SegmentedPickerStyle())
                             .font(.largeTitle)
+                            .onChange(of: mapType) { tag in
+                                applyMapTypeChange()
+                            }
                         }.padding()
                     }
                     .frame(width: 300, height: 100)

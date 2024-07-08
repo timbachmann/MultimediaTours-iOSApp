@@ -13,47 +13,6 @@ import AnyCodable
 open class ToursAPI {
 
     /**
-     Retrieve all generated Tours
-     
-     - parameter apiResponseQueue: The queue on which api response is dispatched.
-     - parameter completion: completion handler to receive the data and the error objects
-     */
-    @discardableResult
-    open class func toursGeneratedGet(apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: [TourResponse]?, _ error: Error?) -> Void)) -> RequestTask {
-        return toursGeneratedGetWithRequestBuilder().execute(apiResponseQueue) { result in
-            switch result {
-            case let .success(response):
-                completion(response.body, nil)
-            case let .failure(error):
-                completion(nil, error)
-            }
-        }
-    }
-
-    /**
-     Retrieve all generated Tours
-     - GET /tours/generated
-     - returns: RequestBuilder<[TourResponse]> 
-     */
-    open class func toursGeneratedGetWithRequestBuilder() -> RequestBuilder<[TourResponse]> {
-        let localVariablePath = "/tours/generated"
-        let localVariableURLString = OpenAPIClientAPI.basePath + localVariablePath
-        let localVariableParameters: [String: Any]? = nil
-
-        let localVariableUrlComponents = URLComponents(string: localVariableURLString)
-
-        let localVariableNillableHeaders: [String: Any?] = [
-            :
-        ]
-
-        let localVariableHeaderParameters = APIHelper.rejectNilHeaders(localVariableNillableHeaders)
-
-        let localVariableRequestBuilder: RequestBuilder<[TourResponse]>.Type = OpenAPIClientAPI.requestBuilderFactory.getBuilder()
-
-        return localVariableRequestBuilder.init(method: "GET", URLString: (localVariableUrlComponents?.string ?? localVariableURLString), parameters: localVariableParameters, headers: localVariableHeaderParameters, requiresAuthentication: false)
-    }
-
-    /**
      Generate a new tour
      
      - parameter generateRequest: (body)  
@@ -61,8 +20,8 @@ open class ToursAPI {
      - parameter completion: completion handler to receive the data and the error objects
      */
     @discardableResult
-    open class func toursGeneratedPost(generateRequest: GenerateRequest, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: TourResponse?, _ error: Error?) -> Void)) -> RequestTask {
-        return toursGeneratedPostWithRequestBuilder(generateRequest: generateRequest).execute(apiResponseQueue) { result in
+    open class func toursGeneratePost(generateRequest: GenerateRequest, apiResponseQueue: DispatchQueue = OpenAPIClientAPI.apiResponseQueue, completion: @escaping ((_ data: TourResponse?, _ error: Error?) -> Void)) -> RequestTask {
+        return toursGeneratePostWithRequestBuilder(generateRequest: generateRequest).execute(apiResponseQueue) { result in
             switch result {
             case let .success(response):
                 completion(response.body, nil)
@@ -74,12 +33,12 @@ open class ToursAPI {
 
     /**
      Generate a new tour
-     - POST /tours/generated
+     - POST /tours/generate
      - parameter generateRequest: (body)  
      - returns: RequestBuilder<TourResponse> 
      */
-    open class func toursGeneratedPostWithRequestBuilder(generateRequest: GenerateRequest) -> RequestBuilder<TourResponse> {
-        let localVariablePath = "/tours/generated"
+    open class func toursGeneratePostWithRequestBuilder(generateRequest: GenerateRequest) -> RequestBuilder<TourResponse> {
+        let localVariablePath = "/tours/generate"
         let localVariableURLString = OpenAPIClientAPI.basePath + localVariablePath
         let localVariableParameters = JSONEncodingHelper.encodingParameters(forEncodableObject: generateRequest)
 

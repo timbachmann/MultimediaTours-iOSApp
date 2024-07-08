@@ -11,12 +11,20 @@
 		22179B252BFD3E4F00FF0417 /* MapViewDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */; };
 		22179B272BFD43A800FF0417 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B262BFD43A800FF0417 /* UIImage+Extension.swift */; };
 		222FA2DA2BFB85E900686FAE /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 222FA2D92BFB85E900686FAE /* Launch Screen.storyboard */; };
+		2238139B2C04C9A4007C7C2D /* RadarAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223813942C04C9A4007C7C2D /* RadarAnnotationView.swift */; };
+		2238139C2C04C9A4007C7C2D /* RadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223813952C04C9A4007C7C2D /* RadarView.swift */; };
+		2238139D2C04C9A4007C7C2D /* ARViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223813972C04C9A4007C7C2D /* ARViewRepresentable.swift */; };
+		2238139E2C04C9A4007C7C2D /* ARDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223813982C04C9A4007C7C2D /* ARDelegate.swift */; };
+		2238139F2C04C9A4007C7C2D /* GeometryUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223813992C04C9A4007C7C2D /* GeometryUtils.swift */; };
+		223813A02C04C9A4007C7C2D /* ARTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2238139A2C04C9A4007C7C2D /* ARTab.swift */; };
+		223813A32C04D72D007C7C2D /* SettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223813A22C04D72D007C7C2D /* SettingsTab.swift */; };
 		229DAE0B2B952DCF0018FCB4 /* historic_city_toursApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DAE0A2B952DCF0018FCB4 /* historic_city_toursApp.swift */; };
 		229DAE0D2B952DCF0018FCB4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DAE0C2B952DCF0018FCB4 /* ContentView.swift */; };
 		229DAE0F2B952DD00018FCB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 229DAE0E2B952DD00018FCB4 /* Assets.xcassets */; };
 		229DAE122B952DD00018FCB4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 229DAE112B952DD00018FCB4 /* Preview Assets.xcassets */; };
 		229DAE1C2B952E940018FCB4 /* MapTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DAE1B2B952E940018FCB4 /* MapTab.swift */; };
 		229DAE1E2B952ECA0018FCB4 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229DAE1D2B952ECA0018FCB4 /* MapView.swift */; };
+		22C4E1832C3C360900E37541 /* OpenAPIClient in Frameworks */ = {isa = PBXBuildFile; productRef = 22C4E1822C3C360900E37541 /* OpenAPIClient */; };
 		22C548AC2BE8DC1B00DC1427 /* Location.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 22C548AB2BE8DC1B00DC1427 /* Location.gpx */; };
 		22C548BB2BE9047100DC1427 /* BrowseTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C548BA2BE9047100DC1427 /* BrowseTab.swift */; };
 		22C548BE2BE9051800DC1427 /* MultimediaObjectData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C548BD2BE9051800DC1427 /* MultimediaObjectData.swift */; };
@@ -33,6 +41,13 @@
 		22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewDetail.swift; sourceTree = "<group>"; };
 		22179B262BFD43A800FF0417 /* UIImage+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		222FA2D92BFB85E900686FAE /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		223813942C04C9A4007C7C2D /* RadarAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarAnnotationView.swift; sourceTree = "<group>"; };
+		223813952C04C9A4007C7C2D /* RadarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarView.swift; sourceTree = "<group>"; };
+		223813972C04C9A4007C7C2D /* ARViewRepresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARViewRepresentable.swift; sourceTree = "<group>"; };
+		223813982C04C9A4007C7C2D /* ARDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARDelegate.swift; sourceTree = "<group>"; };
+		223813992C04C9A4007C7C2D /* GeometryUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometryUtils.swift; sourceTree = "<group>"; };
+		2238139A2C04C9A4007C7C2D /* ARTab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARTab.swift; sourceTree = "<group>"; };
+		223813A22C04D72D007C7C2D /* SettingsTab.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTab.swift; sourceTree = "<group>"; };
 		229DAE072B952DCF0018FCB4 /* historic city tours.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "historic city tours.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		229DAE0A2B952DCF0018FCB4 /* historic_city_toursApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = historic_city_toursApp.swift; sourceTree = "<group>"; };
 		229DAE0C2B952DCF0018FCB4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -56,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22C4E1832C3C360900E37541 /* OpenAPIClient in Frameworks */,
 				22FB1B8E2BFB6FD1006D94F2 /* OpenAPIClient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,6 +86,24 @@
 				22179B1C2BFD345B00FF0417 /* CustomPointAnnotation.swift */,
 			);
 			path = Annotations;
+			sourceTree = "<group>";
+		};
+		223813962C04C9A4007C7C2D /* RadarView */ = {
+			isa = PBXGroup;
+			children = (
+				223813942C04C9A4007C7C2D /* RadarAnnotationView.swift */,
+				223813952C04C9A4007C7C2D /* RadarView.swift */,
+			);
+			name = RadarView;
+			path = "../../../../../../AR-Explorer-Cineast/AR-Explorer/AR-Explorer/Views/AR/RadarView";
+			sourceTree = "<group>";
+		};
+		223813A12C04D719007C7C2D /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				223813A22C04D72D007C7C2D /* SettingsTab.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		229DADFE2B952DCF0018FCB4 = {
@@ -117,6 +151,7 @@
 		229DAE182B952E3B0018FCB4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				223813A12C04D719007C7C2D /* Settings */,
 				22C548B92BE9045100DC1427 /* Browse */,
 				229DAE192B952E430018FCB4 /* Home */,
 				229DAE1A2B952E540018FCB4 /* AR */,
@@ -137,6 +172,11 @@
 		229DAE1A2B952E540018FCB4 /* AR */ = {
 			isa = PBXGroup;
 			children = (
+				223813982C04C9A4007C7C2D /* ARDelegate.swift */,
+				2238139A2C04C9A4007C7C2D /* ARTab.swift */,
+				223813972C04C9A4007C7C2D /* ARViewRepresentable.swift */,
+				223813992C04C9A4007C7C2D /* GeometryUtils.swift */,
+				223813962C04C9A4007C7C2D /* RadarView */,
 			);
 			path = AR;
 			sourceTree = "<group>";
@@ -187,6 +227,7 @@
 			name = "historic city tours";
 			packageProductDependencies = (
 				22FB1B8D2BFB6FD1006D94F2 /* OpenAPIClient */,
+				22C4E1822C3C360900E37541 /* OpenAPIClient */,
 			);
 			productName = "historic city tours";
 			productReference = 229DAE072B952DCF0018FCB4 /* historic city tours.app */;
@@ -217,7 +258,7 @@
 			);
 			mainGroup = 229DADFE2B952DCF0018FCB4;
 			packageReferences = (
-				22FB1B8C2BFB6FD1006D94F2 /* XCLocalSwiftPackageReference "OpenAPIClient" */,
+				22C4E1812C3C360900E37541 /* XCLocalSwiftPackageReference "OpenAPIClient" */,
 			);
 			productRefGroup = 229DAE082B952DCF0018FCB4 /* Products */;
 			projectDirPath = "";
@@ -247,6 +288,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				223813A32C04D72D007C7C2D /* SettingsTab.swift in Sources */,
 				22179B202BFD345B00FF0417 /* CustomPointAnnotation.swift in Sources */,
 				22C548CD2BE92B0900DC1427 /* MultimediaObjectDetailView.swift in Sources */,
 				22C548C22BE9080500DC1427 /* SettingsModel.swift in Sources */,
@@ -254,13 +296,19 @@
 				229DAE1E2B952ECA0018FCB4 /* MapView.swift in Sources */,
 				22C548BB2BE9047100DC1427 /* BrowseTab.swift in Sources */,
 				22C548BE2BE9051800DC1427 /* MultimediaObjectData.swift in Sources */,
+				2238139E2C04C9A4007C7C2D /* ARDelegate.swift in Sources */,
 				22C548CB2BE91CA300DC1427 /* TourDetailView.swift in Sources */,
 				22C548C12BE9080500DC1427 /* LocationManagerModel.swift in Sources */,
 				22179B252BFD3E4F00FF0417 /* MapViewDetail.swift in Sources */,
 				22179B272BFD43A800FF0417 /* UIImage+Extension.swift in Sources */,
 				229DAE1C2B952E940018FCB4 /* MapTab.swift in Sources */,
+				2238139F2C04C9A4007C7C2D /* GeometryUtils.swift in Sources */,
+				2238139B2C04C9A4007C7C2D /* RadarAnnotationView.swift in Sources */,
 				22FB1B8B2BFB67D5006D94F2 /* Color+Extension.swift in Sources */,
+				223813A02C04C9A4007C7C2D /* ARTab.swift in Sources */,
 				229DAE0B2B952DCF0018FCB4 /* historic_city_toursApp.swift in Sources */,
+				2238139D2C04C9A4007C7C2D /* ARViewRepresentable.swift in Sources */,
+				2238139C2C04C9A4007C7C2D /* RadarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +449,7 @@
 				INFOPLIST_FILE = "historic-city-tours-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Historic City Tours";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Camera is used for AR experience.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Location Needed";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Location Needed";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Location Needed";
@@ -439,6 +488,7 @@
 				INFOPLIST_FILE = "historic-city-tours-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Historic City Tours";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.navigation";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Camera is used for AR experience.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Location Needed";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Location Needed";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Location Needed";
@@ -486,13 +536,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		22FB1B8C2BFB6FD1006D94F2 /* XCLocalSwiftPackageReference "OpenAPIClient" */ = {
+		22C4E1812C3C360900E37541 /* XCLocalSwiftPackageReference "OpenAPIClient" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = OpenAPIClient;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		22C4E1822C3C360900E37541 /* OpenAPIClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OpenAPIClient;
+		};
 		22FB1B8D2BFB6FD1006D94F2 /* OpenAPIClient */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = OpenAPIClient;

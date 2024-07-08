@@ -54,7 +54,7 @@ struct BrowseTab: View {
                     })
                 }
                 
-                Section(header: Text("Generated Tours")) {
+                Section(header: Label("Generated Tours", systemImage: "wand.and.stars")) {
                     ForEach(searchResults.filter{ result in result.generated == true }) { tour in
                         NavigationLink(destination: {
                             TourDetailView(selectedTab: $selectedTab, tour: tour)

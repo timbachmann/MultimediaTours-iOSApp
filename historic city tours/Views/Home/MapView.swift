@@ -68,14 +68,18 @@ struct MapView: UIViewRepresentable {
         }
         if applyAnnotations {
             uiView.removeAnnotations(uiView.annotations)
-            addAnnotations(to: uiView)
+            if multimediaObjectData.activeTour != nil {
+                addAnnotations(to: uiView)
+            }
             applyAnnotations = false
         }
         if applyRoute {
             if !polylines.isEmpty {
                 removePolylines(from: uiView)
             }
-            addRoute(to: uiView)
+            if multimediaObjectData.activeTour != nil {
+                addRoute(to: uiView)
+            }
             applyRoute = false
         }
     }

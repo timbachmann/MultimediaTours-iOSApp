@@ -240,6 +240,39 @@ class MultimediaObjectData: ObservableObject {
         return self.multimediaObjects.first{obj in obj.id == id}
     }
     
+    func nextNavigationItemOfTour() {
+        if let activeTourObjectIndex = activeTourObjectIndex {
+            if let activeTour = activeTour {
+                if let multimediaObjects = activeTour.multimediaObjects {
+                    if activeTourObjectIndex < multimediaObjects.count - 1 {
+                        self.activeTourObjectIndex = self.activeTourObjectIndex ?? 0 + 1
+                    } else {
+                        self.activeTourObjectIndex = nil
+                        self.activeTour = nil
+                    }
+                }
+            }
+        }
+    }
+    
+    func generateTour(query: String, completion: @escaping (_ data: TourResponse?, _ error: String?) -> ()) {
+        print("...")
+        ToursAPI.toursGeneratePost(generateRequest: GenerateRequest(searchQuery: query)) { (response, error) in
+            dump(response)
+            if let retrievedData = response {
+                self.tours.append(retrievedData)
+                self.tours.sort(by: { $0.title ?? "a" < $1.title ?? "b" })
+                self.saveToursToFile()
+                
+                print(retrievedData)
+                
+                DispatchQueue.main.async {
+                    completion(retrievedData, error.debugDescription)
+                }
+            }
+        }
+    }
+    
     /**
      Returns cache directory path
      */

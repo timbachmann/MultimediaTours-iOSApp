@@ -4,8 +4,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**toursGeneratedGet**](ToursAPI.md#toursgeneratedget) | **GET** /tours/generated | Retrieve all generated Tours
-[**toursGeneratedPost**](ToursAPI.md#toursgeneratedpost) | **POST** /tours/generated | Generate a new tour
+[**toursGeneratePost**](ToursAPI.md#toursgeneratepost) | **POST** /tours/generate | Generate a new tour
 [**toursGet**](ToursAPI.md#toursget) | **GET** /tours | Retrieve all Tours
 [**toursIdDelete**](ToursAPI.md#toursiddelete) | **DELETE** /tours/{id} | Delete Tour by ID
 [**toursIdGet**](ToursAPI.md#toursidget) | **GET** /tours/{id} | Retrieve a Tour by ID
@@ -13,53 +12,9 @@ Method | HTTP request | Description
 [**toursPost**](ToursAPI.md#tourspost) | **POST** /tours | Create a new tour
 
 
-# **toursGeneratedGet**
+# **toursGeneratePost**
 ```swift
-    open class func toursGeneratedGet(completion: @escaping (_ data: [TourResponse]?, _ error: Error?) -> Void)
-```
-
-Retrieve all generated Tours
-
-### Example
-```swift
-// The following code samples are still beta. For any issue, please report via http://github.com/OpenAPITools/openapi-generator/issues/new
-import OpenAPIClient
-
-
-// Retrieve all generated Tours
-ToursAPI.toursGeneratedGet() { (response, error) in
-    guard error == nil else {
-        print(error)
-        return
-    }
-
-    if (response) {
-        dump(response)
-    }
-}
-```
-
-### Parameters
-This endpoint does not need any parameter.
-
-### Return type
-
-[**[TourResponse]**](TourResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **toursGeneratedPost**
-```swift
-    open class func toursGeneratedPost(generateRequest: GenerateRequest, completion: @escaping (_ data: TourResponse?, _ error: Error?) -> Void)
+    open class func toursGeneratePost(generateRequest: GenerateRequest, completion: @escaping (_ data: TourResponse?, _ error: Error?) -> Void)
 ```
 
 Generate a new tour
@@ -72,7 +27,7 @@ import OpenAPIClient
 let generateRequest = GenerateRequest(searchQuery: "searchQuery_example") // GenerateRequest | 
 
 // Generate a new tour
-ToursAPI.toursGeneratedPost(generateRequest: generateRequest) { (response, error) in
+ToursAPI.toursGeneratePost(generateRequest: generateRequest) { (response, error) in
     guard error == nil else {
         print(error)
         return

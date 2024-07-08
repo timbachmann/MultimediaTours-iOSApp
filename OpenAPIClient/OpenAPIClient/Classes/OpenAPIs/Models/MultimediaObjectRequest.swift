@@ -23,15 +23,17 @@ public struct MultimediaObjectRequest: Codable, JSONEncodable, Hashable {
     public var title: String?
     public var date: String?
     public var source: String?
+    public var tags: [String]?
     public var position: MultimediaObjectPosition?
     public var data: String
     public var author: String?
 
-    public init(type: ModelType, title: String? = nil, date: String? = nil, source: String? = nil, position: MultimediaObjectPosition? = nil, data: String, author: String? = nil) {
+    public init(type: ModelType, title: String? = nil, date: String? = nil, source: String? = nil, tags: [String]? = nil, position: MultimediaObjectPosition? = nil, data: String, author: String? = nil) {
         self.type = type
         self.title = title
         self.date = date
         self.source = source
+        self.tags = tags
         self.position = position
         self.data = data
         self.author = author
@@ -42,6 +44,7 @@ public struct MultimediaObjectRequest: Codable, JSONEncodable, Hashable {
         case title
         case date
         case source
+        case tags
         case position
         case data
         case author
@@ -55,6 +58,7 @@ public struct MultimediaObjectRequest: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(title, forKey: .title)
         try container.encodeIfPresent(date, forKey: .date)
         try container.encodeIfPresent(source, forKey: .source)
+        try container.encodeIfPresent(tags, forKey: .tags)
         try container.encodeIfPresent(position, forKey: .position)
         try container.encode(data, forKey: .data)
         try container.encodeIfPresent(author, forKey: .author)

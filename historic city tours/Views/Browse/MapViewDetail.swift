@@ -82,7 +82,7 @@ struct MapViewDetail: UIViewRepresentable {
     }
     
     func addAnnotations(to mapView: MKMapView) {
-        for mmObjectId in activeTour.multimediaObjects! {
+        for mmObjectId in activeTour.multimediaObjects ?? [] {
             let mmObject = multimediaObjectData.getMultimediaObject(id: mmObjectId)
             
             if mmObject?.position != nil && mmObject != nil {

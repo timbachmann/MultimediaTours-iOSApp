@@ -33,8 +33,7 @@ Class | Method | HTTP request | Description
 *MultimediaObjectsAPI* | [**multimediaObjectsIdGet**](docs/MultimediaObjectsAPI.md#multimediaobjectsidget) | **GET** /multimedia-objects/{id} | Retrieve a MultimediaObject by ID
 *MultimediaObjectsAPI* | [**multimediaObjectsIdPut**](docs/MultimediaObjectsAPI.md#multimediaobjectsidput) | **PUT** /multimedia-objects/{id} | Update MultimediaObject by ID
 *MultimediaObjectsAPI* | [**multimediaObjectsPost**](docs/MultimediaObjectsAPI.md#multimediaobjectspost) | **POST** /multimedia-objects | Create a new multimediaObject
-*ToursAPI* | [**toursGeneratedGet**](docs/ToursAPI.md#toursgeneratedget) | **GET** /tours/generated | Retrieve all generated Tours
-*ToursAPI* | [**toursGeneratedPost**](docs/ToursAPI.md#toursgeneratedpost) | **POST** /tours/generated | Generate a new tour
+*ToursAPI* | [**toursGeneratePost**](docs/ToursAPI.md#toursgeneratepost) | **POST** /tours/generate | Generate a new tour
 *ToursAPI* | [**toursGet**](docs/ToursAPI.md#toursget) | **GET** /tours | Retrieve all Tours
 *ToursAPI* | [**toursIdDelete**](docs/ToursAPI.md#toursiddelete) | **DELETE** /tours/{id} | Delete Tour by ID
 *ToursAPI* | [**toursIdGet**](docs/ToursAPI.md#toursidget) | **GET** /tours/{id} | Retrieve a Tour by ID

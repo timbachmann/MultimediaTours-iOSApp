@@ -27,8 +27,9 @@ public struct MultimediaObjectResponse: Codable, JSONEncodable, Hashable {
     public var source: String?
     public var position: MultimediaObjectPosition?
     public var author: String?
+    public var tags: [String]?
 
-    public init(id: String? = nil, type: ModelType? = nil, data: String? = nil, title: String? = nil, date: String? = nil, source: String? = nil, position: MultimediaObjectPosition? = nil, author: String? = nil) {
+    public init(id: String? = nil, type: ModelType? = nil, data: String? = nil, title: String? = nil, date: String? = nil, source: String? = nil, position: MultimediaObjectPosition? = nil, author: String? = nil, tags: [String]? = nil) {
         self.id = id
         self.type = type
         self.data = data
@@ -37,6 +38,7 @@ public struct MultimediaObjectResponse: Codable, JSONEncodable, Hashable {
         self.source = source
         self.position = position
         self.author = author
+        self.tags = tags
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
@@ -48,6 +50,7 @@ public struct MultimediaObjectResponse: Codable, JSONEncodable, Hashable {
         case source
         case position
         case author
+        case tags
     }
 
     // Encodable protocol methods
@@ -62,6 +65,7 @@ public struct MultimediaObjectResponse: Codable, JSONEncodable, Hashable {
         try container.encodeIfPresent(source, forKey: .source)
         try container.encodeIfPresent(position, forKey: .position)
         try container.encodeIfPresent(author, forKey: .author)
+        try container.encodeIfPresent(tags, forKey: .tags)
     }
 }
 

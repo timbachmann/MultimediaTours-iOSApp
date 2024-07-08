@@ -15,6 +15,14 @@ struct MultimediaObjectDetailView: View {
     @State private var detailImage: Image?
     @State private var player: AVPlayer?
     
+    @State private var TagColors: Array<Color> = [
+        Color.tag1,
+        Color.tag2,
+        Color.tag3,
+        Color.tag4,
+        Color.tag5,
+    ]
+    
     var body: some View {
         VStack{
             if player != nil {
@@ -52,16 +60,35 @@ struct MultimediaObjectDetailView: View {
                         }
                     }
                 }
-                Section(header: Text("Source")) {
-                    HStack{
-                        Text($multimediaObject.source.wrappedValue ?? "")
-                        Spacer()
+                if $multimediaObject.source.wrappedValue != nil {
+                    Section(header: Text("Source")) {
+                        HStack{
+                            Text($multimediaObject.source.wrappedValue ?? "")
+                            Spacer()
+                        }
                     }
                 }
-                Section(header: Text("Author")) {
-                    HStack{
-                        Text($multimediaObject.author.wrappedValue ?? "")
-                        Spacer()
+                if $multimediaObject.author.wrappedValue != nil {
+                    Section(header: Text("Author")) {
+                        HStack{
+                            Text($multimediaObject.author.wrappedValue ?? "")
+                            Spacer()
+                        }
+                    }
+                }
+                
+                if $multimediaObject.tags.wrappedValue?.count != 0 {
+                    Section(header: Text("Tags")) {
+                        HStack{
+                            ForEach($multimediaObject.tags.wrappedValue ?? [], id: \.self) { tag in
+                                Text(tag)
+                                    .padding(.horizontal, 4.0)
+                                    .padding(.vertical, 2.0)
+                                    .font(.system(size: 12))
+                                    .background(TagColors[Int.random(in: 0..<TagColors.count)])
+                                    .cornerRadius(3.0, corners: .allCorners)
+                            }
+                        }
                     }
                 }
             }

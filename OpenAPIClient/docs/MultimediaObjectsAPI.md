@@ -164,7 +164,7 @@ Update MultimediaObject by ID
 import OpenAPIClient
 
 let id = "id_example" // String | 
-let multimediaObjectRequest = MultimediaObjectRequest(type: "type_example", title: "title_example", date: "date_example", source: "source_example", position: MultimediaObjectPosition(lat: 123, lng: 123, bearing: 123, yaw: 123), data: "data_example", author: "author_example") // MultimediaObjectRequest | 
+let multimediaObjectRequest = MultimediaObjectRequest(type: "type_example", title: "title_example", date: "date_example", source: "source_example", tags: ["tags_example"], position: MultimediaObjectPosition(lat: 123, lng: 123, bearing: 123, yaw: 123), data: "data_example", author: "author_example") // MultimediaObjectRequest | 
 
 // Update MultimediaObject by ID
 MultimediaObjectsAPI.multimediaObjectsIdPut(id: id, multimediaObjectRequest: multimediaObjectRequest) { (response, error) in
@@ -213,7 +213,7 @@ Create a new multimediaObject
 // The following code samples are still beta. For any issue, please report via http://github.com/OpenAPITools/openapi-generator/issues/new
 import OpenAPIClient
 
-let multimediaObjectRequest = MultimediaObjectRequest(type: "type_example", title: "title_example", date: "date_example", source: "source_example", position: MultimediaObjectPosition(lat: 123, lng: 123, bearing: 123, yaw: 123), data: "data_example", author: "author_example") // MultimediaObjectRequest | 
+let multimediaObjectRequest = MultimediaObjectRequest(type: "type_example", title: "title_example", date: "date_example", source: "source_example", tags: ["tags_example"], position: MultimediaObjectPosition(lat: 123, lng: 123, bearing: 123, yaw: 123), data: "data_example", author: "author_example") // MultimediaObjectRequest | 
 
 // Create a new multimediaObject
 MultimediaObjectsAPI.multimediaObjectsPost(multimediaObjectRequest: multimediaObjectRequest) { (response, error) in
