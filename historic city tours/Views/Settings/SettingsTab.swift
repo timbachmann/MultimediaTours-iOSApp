@@ -15,29 +15,32 @@ struct SettingsTab: View {
     
     @EnvironmentObject var settingsModel: SettingsModel
     @State var serverAddress: String = ""
-    @State var userThumbLeft: Bool = true
+    @State var debugMode: Bool = false
     
     var body: some View {
         ZStack {
             List {
-                Section(header: Label("Server Address", systemImage: "link.icloud")) {
-                    TextField(settingsModel.serverAddress, text: $serverAddress, onCommit: {
-                        settingsModel.serverAddress = serverAddress
-                        settingsModel.saveSettingsToFile()
-                    })
+                Section(header: Label("Server Address", systemImage: "icloud")) {
+                    HStack {
+                        Image(systemName: "link.icloud")
+                        TextField(settingsModel.serverAddress, text: $serverAddress, onCommit: {
+                            settingsModel.serverAddress = serverAddress
+                            settingsModel.saveSettingsToFile()
+                        })
+                    }
                 }
-                Section(header: Label("Control Center Alignment", systemImage: "hand.point.up")) {
-                    Toggle(isOn: $userThumbLeft) {
-                        Text("Left handed use")
+                Section(header: Label("AR", systemImage: "arkit")) {
+                    Toggle(isOn: $debugMode) {
+                        Label("Debug Mode", systemImage: "exclamationmark.bubble")
                     }
                 }
             }
             .onAppear(perform: {
-                userThumbLeft = !settingsModel.userThumbRight
+                debugMode = settingsModel.debugMode
                 serverAddress = settingsModel.serverAddress
             })
-            .onChange(of: userThumbLeft) { value in
-                settingsModel.userThumbRight = !userThumbLeft
+            .onChange(of: debugMode) { value in
+                settingsModel.debugMode = debugMode
                 settingsModel.saveSettingsToFile()
             }
         }

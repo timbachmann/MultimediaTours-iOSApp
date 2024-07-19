@@ -17,17 +17,23 @@ import MapKit
 struct ARViewRepresentable: UIViewRepresentable {
     let arDelegate:ARDelegate
     @Binding var redrawImages: Bool
+    @Binding var showDetailPage: Bool
     @EnvironmentObject var multimediaObjectData: MultimediaObjectData
     @EnvironmentObject var locationManagerModel: LocationManagerModel
+    @EnvironmentObject var settingsModel: SettingsModel
     @State var nodes: [SCNNode] = []
+    @State var updating: Bool = false
+    @State var updatingRoute: Bool = false
     
     /**
      
      */
     func makeUIView(context: Context) -> some UIView {
         let arView = ARSCNView(frame: .zero)
-        //arView.showsStatistics = true
-        //arView.debugOptions = [ARSCNDebugOptions.showWorldOrigin]
+        if settingsModel.debugMode == true {
+            arView.showsStatistics = true
+            arView.debugOptions = [ARSCNDebugOptions.showWorldOrigin]
+        }
         arDelegate.setARView(arView)
         if multimediaObjectData.activeTourObjectIndex != nil {
             loadRoute()
@@ -40,14 +46,17 @@ struct ARViewRepresentable: UIViewRepresentable {
      
      */
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        if redrawImages {
-            
+        if redrawImages && !updating {
+            updating = true
+            print(multimediaObjectData.activeTourObjectIndex ?? "undefined")
             arDelegate.removeAllNodes()
-            loadImageNodes()
-            if multimediaObjectData.activeTourObjectIndex != nil {
+            if multimediaObjectData.activeTourObjectIndex != nil && !updatingRoute {
+                updatingRoute = true
                 arDelegate.removeAllPolyNodes()
                 loadRoute()
             }
+            loadImageNodes()
+            updating = false
             redrawImages = false
         }
     }
@@ -73,9 +82,9 @@ struct ARViewRepresentable: UIViewRepresentable {
                                     case .video:
                                         createVideoNode(mmObject: navigationObject, location: nodeLocation)
                                     case .audio:
-                                        return
+                                        $showDetailPage.wrappedValue.toggle()
                                     case .text:
-                                        return
+                                        $showDetailPage.wrappedValue.toggle()
                                     default:
                                         return
                                 }
@@ -224,12 +233,14 @@ struct ARViewRepresentable: UIViewRepresentable {
      
      */
     func loadRoute() {
+        print("loading route...")
         if let activeIndex = multimediaObjectData.activeTourObjectIndex {
             if let activeTour = multimediaObjectData.activeTour {
                 let navigationObject = multimediaObjectData.getMultimediaObject(id: activeTour.multimediaObjects![activeIndex])
                 
                 if let navigationObject = navigationObject {
                     if let position = navigationObject.position {
+                        print("starting request...")
                         let request = MKDirections.Request()
                         request.transportType = .walking
                         request.source = MKMapItem(placemark: MKPlacemark(coordinate: CLLocationManager().location!.coordinate))
@@ -240,6 +251,8 @@ struct ARViewRepresentable: UIViewRepresentable {
                             guard let mapRoute = response?.routes.first else {
                                 return
                             }
+                            
+                            defer { print("directions request finished") }
                             
                             let points = mapRoute.polyline.points()
                             
@@ -259,6 +272,7 @@ struct ARViewRepresentable: UIViewRepresentable {
                             addPolyPointNode(point: CLLocation(coordinate: points[mapRoute.polyline.pointCount-1].coordinate), color: .green)
                             let endLineNode = SCNGeometry.cylinderLine(from: translateNode(CLLocation(coordinate: points[mapRoute.polyline.pointCount-1].coordinate), altitude: -2.0), to: translateNode(CLLocation(coordinate: CLLocationCoordinate2D(latitude: position.lat, longitude: position.lng)), altitude: -2.0), segments: 48)
                             arDelegate.placePolyNode(polyNode: endLineNode)
+                            updatingRoute = false
                         }
                     }
                 }
@@ -296,7 +310,7 @@ struct ARViewRepresentable: UIViewRepresentable {
 
 struct ARViewRepresentable_Previews: PreviewProvider {
     static var previews: some View {
-        ARViewRepresentable(arDelegate: ARDelegate(), redrawImages: .constant(false))
+        ARViewRepresentable(arDelegate: ARDelegate(), redrawImages: .constant(false), showDetailPage: .constant(false))
     }
 }
 

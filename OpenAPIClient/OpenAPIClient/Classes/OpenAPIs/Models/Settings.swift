@@ -14,10 +14,10 @@ import AnyCodable
 public struct Settings: Codable, JSONEncodable, Hashable {
     
     public var serverAddress: String
-    public var userThumbRight: Bool
+    public var debugMode: Bool
     
-    public init(serverAddress: String, userThumbRight: Bool) {
+    public init(serverAddress: String, debugMode: Bool) {
         self.serverAddress = serverAddress
-        self.userThumbRight = true
+        self.debugMode = false
     }
 }

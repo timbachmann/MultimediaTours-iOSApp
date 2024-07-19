@@ -13,7 +13,7 @@ import UIKit
  
  */
 class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
-    @Published var message: String = "starting AR"
+    private var message: String = "starting AR"
     @Published var cameraTransform: simd_float4x4? = nil
     private var arView: ARSCNView?
     private var nodes: [SCNNode] = []
@@ -33,31 +33,6 @@ class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
         
         arView.delegate = self
         arView.scene = SCNScene()
-        
-//        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panOnARView))
-//        arView.addGestureRecognizer(panGesture)
-    }
-    
-    /**
-     
-     */
-    @objc func panOnARView(sender: UIPanGestureRecognizer) {
-        guard let arView = arView else { return }
-        let location = sender.location(in: arView)
-        switch sender.state {
-        case .began:
-            if let node = nodeAtLocation(location) {
-                trackedNode = node
-            }
-        case .changed:
-            if let node = trackedNode {
-                if let result = raycastResult(fromLocation: location) {
-                    moveNode(node, raycastResult:result)
-                }
-            }
-        default:
-            ()
-        }
     }
     
     /**
@@ -101,24 +76,6 @@ class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
     /**
      
      */
-    private func moveNode(_ node:SCNNode, raycastResult:ARRaycastResult) {
-        node.simdWorldTransform = raycastResult.worldTransform
-        node.rotation = SCNVector4Make(0, 0, 1, .pi / -2)
-        nodesUpdated()
-    }
-    
-    /**
-     
-     */
-    private func nodeAtLocation(_ location:CGPoint) -> SCNNode? {
-        guard let arView = arView else { return nil }
-        let result = arView.hitTest(location, options: nil)
-        return result.first?.node
-    }
-    
-    /**
-     
-     */
     func placeNode(node: SCNNode) {
         nodes.append(node)
         arView?.scene.rootNode.addChildNode(node)
@@ -138,24 +95,24 @@ class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
      */
     func nodesUpdated() {
         if nodes.count >= 1 {
-            message = "\(nodes.count) AR objects placed"
+            message = "\(nodes.count) AR object(s) placed"
         }
         else {
-            message = "Node not placed"
+            message = "Node not placed..."
         }
     }
     
     /**
      
      */
-    private func raycastResult(fromLocation location: CGPoint) -> ARRaycastResult? {
-        guard let arView = arView,
-              let query = arView.raycastQuery(from: location,
-                                        allowing: .existingPlaneGeometry,
-                                        alignment: .horizontal) else { return nil }
-        let results = arView.session.raycast(query)
-        return results.first
-    }
+//    private func raycastResult(fromLocation location: CGPoint) -> ARRaycastResult? {
+//        guard let arView = arView,
+//              let query = arView.raycastQuery(from: location,
+//                                        allowing: .existingPlaneGeometry,
+//                                        alignment: .horizontal) else { return nil }
+//        let results = arView.session.raycast(query)
+//        return results.first
+//    }
     
     /**
      
@@ -189,5 +146,9 @@ class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
         for node in polyNodes {
             removePolyNode(node: node)
         }
+    }
+    
+    func getMessage() -> String {
+        return message
     }
 }

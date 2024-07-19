@@ -256,7 +256,6 @@ class MultimediaObjectData: ObservableObject {
     }
     
     func generateTour(query: String, completion: @escaping (_ data: TourResponse?, _ error: String?) -> ()) {
-        print("...")
         ToursAPI.toursGeneratePost(generateRequest: GenerateRequest(searchQuery: query)) { (response, error) in
             dump(response)
             if let retrievedData = response {

@@ -15,7 +15,7 @@ import OpenAPIClient
  */
 class SettingsModel: ObservableObject {
     @Published var serverAddress: String = OpenAPIClientAPI.basePath
-    @Published var userThumbRight: Bool = true
+    @Published var debugMode: Bool = false
     
     /**
      Initialize settings by loading from cache
@@ -25,7 +25,7 @@ class SettingsModel: ObservableObject {
             if let retrievedData = data {
                 self.serverAddress = retrievedData.serverAddress
                 OpenAPIClientAPI.basePath = retrievedData.serverAddress
-                self.userThumbRight = retrievedData.userThumbRight
+                self.debugMode = retrievedData.debugMode
             }
         }
     }
@@ -67,7 +67,7 @@ class SettingsModel: ObservableObject {
         
         OpenAPIClientAPI.basePath = serverAddress
         
-        let settings = Settings(serverAddress: serverAddress,  userThumbRight: userThumbRight)
+        let settings = Settings(serverAddress: serverAddress,  debugMode: debugMode)
         do {
             let jsonDataLocal = try JSONEncoder().encode(settings)
             try jsonDataLocal.write(to: path)

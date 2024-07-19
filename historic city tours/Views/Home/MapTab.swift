@@ -250,6 +250,8 @@ extension MapTab {
             dispatchGroup.notify(queue: .main) {
                 applyRoute = true
             }
+        } else {
+            applyRoute = true
         }
     }
 }

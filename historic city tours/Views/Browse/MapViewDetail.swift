@@ -16,12 +16,6 @@ struct MapViewDetail: UIViewRepresentable {
     typealias UIViewType = MKMapView
     
     var locationManager = CLLocationManager()
-    func setupManager() {
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.requestAlwaysAuthorization()
-    }
-    
     @EnvironmentObject var multimediaObjectData: MultimediaObjectData
     @Binding var activeTour: TourResponse
     @Binding var selectedTab: ContentView.Tab
@@ -44,7 +38,9 @@ struct MapViewDetail: UIViewRepresentable {
      
      */
     func makeUIView(context: UIViewRepresentableContext<MapViewDetail>) -> MKMapView {
-        setupManager()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestAlwaysAuthorization()
         mapView.delegate = context.coordinator
         mapView.register(MKMarkerAnnotationView.self, forAnnotationViewWithReuseIdentifier: identifier)
         mapView.setRegion(region, animated: true)
