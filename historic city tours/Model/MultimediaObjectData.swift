@@ -212,7 +212,7 @@ class MultimediaObjectData: ObservableObject {
         }
     }
     
-    func getFileForMultimediaObject(id: String, type: MultimediaObjectResponse.ModelType, completion: @escaping (_ data: String?, _ error: String?) -> ()) {
+    func getFileForMultimediaObject(id: String, completion: @escaping (_ data: String?, _ error: String?) -> ()) {
         let filesDirectory = getCacheDirectoryPath().appendingPathComponent("multimedia-objects").appendingPathComponent("file")
         let fileDirectory = filesDirectory.appendingPathComponent(id)
         

@@ -13,16 +13,14 @@ import UIKit
  
  */
 class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
-    private var message: String = "starting AR"
+    private var message: String = "Starting AR"
     @Published var cameraTransform: simd_float4x4? = nil
-    private var arView: ARSCNView?
-    private var nodes: [SCNNode] = []
-    private var polyNodes: [SCNNode] = []
-    private var trackedNode:SCNNode?
+    var arView: ARSCNView?
+    var nodes: [SCNNode] = []
+    var polyNodes: [SCNNode] = []
+    var currLocation: CLLocation = CLLocation()
     
-    /**
-     
-     */
+    
     func setARView(_ arView: ARSCNView) {
         self.arView = arView
         
@@ -30,14 +28,13 @@ class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
         configuration.worldAlignment = .gravityAndHeading
         configuration.planeDetection = .horizontal
         arView.session.run(configuration)
-        
+        arView.autoenablesDefaultLighting = true
+        arView.automaticallyUpdatesLighting = true
         arView.delegate = self
         arView.scene = SCNScene()
     }
     
-    /**
-     
-     */
+    
     func session(_ session: ARSession, cameraDidChangeTrackingState camera: ARCamera) {
         print("camera did change \(camera.trackingState)")
         switch camera.trackingState {
@@ -61,94 +58,54 @@ class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
      
      */
     func reset() {
-        if arView != nil {
-            arView?.session.pause()
-            arView?.scene.rootNode.enumerateChildNodes { (node, stop) in
+        if let arView = arView {
+            arView.session.pause()
+            arView.scene.rootNode.enumerateChildNodes { (node, stop) in
                 node.removeFromParentNode()
             }
             let configuration = ARWorldTrackingConfiguration()
             configuration.worldAlignment = .gravityAndHeading
             configuration.planeDetection = .horizontal
-            arView?.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+            arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
         }
     }
     
-    /**
-     
-     */
-    func placeNode(node: SCNNode) {
-        nodes.append(node)
-        arView?.scene.rootNode.addChildNode(node)
-        nodesUpdated()
+    
+    func placeNode(node: SCNNode, view: ARSCNView) {
+        view.scene.rootNode.addChildNode(node)
     }
     
-    /**
-     
-     */
-    func placePolyNode(polyNode: SCNNode) {
-        polyNodes.append(polyNode)
-        arView?.scene.rootNode.addChildNode(polyNode)
-    }
     
-    /**
-     
-     */
-    func nodesUpdated() {
-        if nodes.count >= 1 {
-            message = "\(nodes.count) AR object(s) placed"
+    func updateNodes(view: ARSCNView) {
+        view.scene.rootNode.enumerateChildNodes { (existingNode, _) in
+            if !polyNodes.contains(where: { $0 == existingNode}) {
+                existingNode.removeFromParentNode()
+            }
         }
-        else {
-            message = "Node not placed..."
+        for newNode in nodes {
+            placeNode(node: newNode, view: view)
         }
     }
     
-    /**
-     
-     */
-//    private func raycastResult(fromLocation location: CGPoint) -> ARRaycastResult? {
-//        guard let arView = arView,
-//              let query = arView.raycastQuery(from: location,
-//                                        allowing: .existingPlaneGeometry,
-//                                        alignment: .horizontal) else { return nil }
-//        let results = arView.session.raycast(query)
-//        return results.first
-//    }
     
-    /**
-     
-     */
-    func removeNode(node:SCNNode) {
-        node.removeFromParentNode()
-        nodes.removeAll(where: { $0 == node })
-    }
-    
-    /**
-     
-     */
-    func removeAllNodes() {
-        for node in nodes {
-            removeNode(node: node)
+    func updatePolyNodes(view: ARSCNView) {
+        view.scene.rootNode.enumerateChildNodes { (existingNode, _) in
+            if !nodes.contains(where: { $0 == existingNode}) {
+                existingNode.removeFromParentNode()
+            }
+        }
+        for newPolyNode in polyNodes {
+            placeNode(node: newPolyNode, view: view)
         }
     }
     
-    /**
-     
-     */
-    func removePolyNode(node: SCNNode) {
-        node.removeFromParentNode()
-        polyNodes.removeAll(where: { $0 == node })
-    }
-    
-    /**
-     
-     */
-    func removeAllPolyNodes() {
-        for node in polyNodes {
-            removePolyNode(node: node)
-        }
-    }
     
     func getMessage() -> String {
         return message
+    }
+    
+    
+    func setCurrLocation(newLocation: CLLocation) {
+        currLocation = newLocation
     }
 }

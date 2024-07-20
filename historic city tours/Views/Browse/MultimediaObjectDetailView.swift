@@ -106,7 +106,7 @@ extension MultimediaObjectDetailView {
     
     func loadFile() {
         if multimediaObject.type != .text {
-            multimediaObjectData.getFileForMultimediaObject(id: multimediaObject.id!, type: multimediaObject.type!) { (filePath, error) in
+            multimediaObjectData.getFileForMultimediaObject(id: multimediaObject.id!) { (filePath, error) in
                 if filePath != nil {
                     switch multimediaObject.type {
                     case .image:

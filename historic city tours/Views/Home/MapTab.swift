@@ -114,7 +114,7 @@ struct MapTab: View {
                             Button(action: {
                                 multimediaObjectData.activeTourObjectIndex = nil
                                 multimediaObjectData.activeTour = nil
-                                applyRoute = true
+                                //applyRoute = true
                                 applyAnnotations = true
                             }, label: {
                                 Image(systemName: "xmark")
@@ -143,7 +143,7 @@ struct MapTab: View {
                             }
                             .pickerStyle(SegmentedPickerStyle())
                             .font(.largeTitle)
-                            .onChange(of: mapType) { tag in
+                            .onChange(of: mapType) { oldTag, newTag in
                                 applyMapTypeChange()
                             }
                         }.padding()
@@ -159,7 +159,7 @@ struct MapTab: View {
         .onAppear(perform: {
             requestNotificationAuthorization()
             applyAnnotations = true
-            fetchRoute()
+            //fetchRoute()
         })
     }
 }

@@ -135,7 +135,7 @@ extension TourDetailView {
         }
         isFetching = false
         applyAnnotations = true
-        fetchRoute()
+        //fetchRoute()
     }
     
     func fetchRoute() {
