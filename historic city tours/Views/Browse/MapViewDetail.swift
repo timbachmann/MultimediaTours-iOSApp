@@ -23,9 +23,8 @@ struct MapViewDetail: UIViewRepresentable {
     @Binding var detailId: String
     @Binding var zoomOnLocation: Bool
     @Binding var changeMapType: Bool
-    @Binding var applyAnnotations: Bool
-    @Binding var applyRoute: Bool
-    @Binding var polylines: [MKPolyline?]
+    @Binding var annotations: [CustomPointAnnotation]
+    @Binding var polylines: [MKPolyline]
     let region: MKCoordinateRegion
     let mapType: MKMapType
     let showsUserLocation: Bool
@@ -48,6 +47,10 @@ struct MapViewDetail: UIViewRepresentable {
         mapView.showsUserLocation = showsUserLocation
         mapView.showsTraffic = true
         mapView.showsBuildings = true
+        
+        mapView.addAnnotations(annotations)
+        mapView.addOverlays(polylines)
+        
         return mapView
     }
     
@@ -56,55 +59,42 @@ struct MapViewDetail: UIViewRepresentable {
      */
     func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<MapViewDetail>) {
         if changeMapType {
-            uiView.mapType = mapType
+            DispatchQueue.main.async {
+                uiView.mapType = mapType
+            }
         }
         if zoomOnLocation {
-            uiView.setRegion(region, animated: true)
-            zoomOnLocation = false
+            DispatchQueue.main.async {
+                uiView.setRegion(region, animated: true)
+                zoomOnLocation = false
+            }
         }
-        if applyAnnotations {
-            uiView.removeAnnotations(uiView.annotations)
-            addAnnotations(to: uiView)
-            applyAnnotations = false
+        if Set(context.coordinator.annotations) != Set(annotations) {
+            DispatchQueue.main.async {
+                context.coordinator.annotations = annotations
+                uiView.removeAnnotations(uiView.annotations)
+                uiView.addAnnotations(annotations)
+            }
+            
         }
         
-        if applyRoute {
-            if !polylines.isEmpty {
-                removePolylines(from: uiView)
-            }
-            addRoute(to: uiView)
-            applyRoute = false
-        }
-    }
-    
-    func addAnnotations(to mapView: MKMapView) {
-        for mmObjectId in activeTour.multimediaObjects ?? [] {
-            let mmObject = multimediaObjectData.getMultimediaObject(id: mmObjectId)
-            
-            if mmObject?.position != nil && mmObject != nil {
-                let annotation = CustomPointAnnotation(coordinate: CLLocationCoordinate2D(latitude: mmObject!.position!.lat, longitude: mmObject!.position!.lng), title: mmObject!.title!, subtitle: mmObject!.source!, id: mmObject!.id!)
-                
-                mapView.addAnnotation(annotation)
-            }
-        }
-    }
-    
-    func addRoute(to mapView: MKMapView) {
-        var coordinates: Array<MKMapPoint> = []
-        for polyline in polylines {
-            if let polyline = polyline {
-                coordinates.append(contentsOf: Array(UnsafeBufferPointer(start: polyline.points(), count: polyline.pointCount)))
-                mapView.addOverlay(polyline)
-            }
-        }
-        let polygon = MKPolyline(points: coordinates, count: coordinates.count)
-        mapView.setVisibleMapRect(polygon.boundingMapRect, edgePadding: .init(top: 40, left: 40, bottom: 40, right: 40), animated: true)
-    }
-    
-    func removePolylines(from mapView: MKMapView) {
-        for polyline in polylines {
-            if let polyline = polyline {
-                mapView.removeOverlay(polyline)
+        
+        if Set(context.coordinator.polylines) != Set(polylines) {
+            DispatchQueue.main.async {
+                context.coordinator.polylines = polylines
+                uiView.removeOverlays(uiView.overlays)
+                var coordinates: Array<MKMapPoint> = []
+                for polyline in polylines {
+                    coordinates.append(contentsOf: Array(UnsafeBufferPointer(start: polyline.points(), count: polyline.pointCount)))
+                    uiView.addOverlay(polyline)
+                }
+                if !coordinates.isEmpty {
+                    let polygon = MKPolyline(points: coordinates, count: coordinates.count)
+                    uiView.setVisibleMapRect(polygon.boundingMapRect, edgePadding: .init(top: 64, left: 64, bottom: 64, right: 64), animated: true)
+                } else {
+                    let coordinateRegion = MKCoordinateRegion.init(center: CLLocationCoordinate2D(latitude: CLLocationManager().location?.coordinate.latitude ?? 47.559_601, longitude: CLLocationManager().location?.coordinate.longitude ?? 7.588_576), span: MKCoordinateSpan(latitudeDelta: 0.0051, longitudeDelta: 0.0051))
+                    uiView.setRegion(coordinateRegion, animated: true)
+                }
             }
         }
     }
@@ -113,7 +103,7 @@ struct MapViewDetail: UIViewRepresentable {
      
      */
     func makeCoordinator() -> MapViewDetail.Coordinator {
-        Coordinator(self, activeTour: $activeTour, detailId: $detailId, showDetail: $showDetail, selectedTab: $selectedTab)
+        Coordinator(self, activeTour: $activeTour, detailId: $detailId, showDetail: $showDetail, selectedTab: $selectedTab, annotations: annotations, polylines: polylines)
     }
     
     /**
@@ -124,6 +114,8 @@ struct MapViewDetail: UIViewRepresentable {
         @Binding var showDetail: Bool
         @Binding var detailId: String
         @Binding var selectedTab: ContentView.Tab
+        var annotations: [CustomPointAnnotation]
+        var polylines: [MKPolyline]
         private let mapView: MapViewDetail
         private var route: MKRoute? = nil
         let identifier = "AnnotationDetail"
@@ -162,12 +154,14 @@ struct MapViewDetail: UIViewRepresentable {
         /**
          
          */
-        init(_ mapView: MapViewDetail, activeTour: Binding<TourResponse>, detailId: Binding<String>, showDetail: Binding<Bool>, selectedTab: Binding<ContentView.Tab>) {
+        init(_ mapView: MapViewDetail, activeTour: Binding<TourResponse>, detailId: Binding<String>, showDetail: Binding<Bool>, selectedTab: Binding<ContentView.Tab>, annotations: [CustomPointAnnotation], polylines: [MKPolyline]) {
             self.mapView = mapView
             _activeTour = activeTour
             _detailId = detailId
             _showDetail = showDetail
             _selectedTab = selectedTab
+            self.annotations = annotations
+            self.polylines = polylines
         }
         
         /**

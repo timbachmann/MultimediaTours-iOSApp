@@ -11,9 +11,7 @@ import MapKit
 import AVKit
 import OpenAPIClient
 
-/**
- 
- */
+
 struct ARTab: View {
     
     @EnvironmentObject var multimediaObjectData: MultimediaObjectData
@@ -25,19 +23,20 @@ struct ARTab: View {
     
     @State private var detailImage: Image?
     @State private var player: AVPlayer?
-    @State var polyline: MKPolyline = MKPolyline()
+    @State var polyline: MKPolyline? = nil
     @State var directionsRequestSent: Bool = false
     @State var showDetailPanel: Bool = false
     @State var currLocation: CLLocation = CLLocation()
     @State var navigationObject: MultimediaObjectResponse? = nil
     @State var nodes: [SCNNode] = []
     @State var polyNodes: [SCNNode] = []
+    @State var reset: Int = 0
     
     var body: some View {
         ZStack {
             Color.black
             if selectedTab == .ar {
-                ARViewRepresentable(arDelegate: arDelegate, nodes: $nodes, polyNodes: $polyNodes, currLocation: $currLocation)
+                ARViewRepresentable(arDelegate: arDelegate, nodes: $nodes, polyNodes: $polyNodes, currLocation: $currLocation, reset: $reset)
             } else {
                 Image(systemName: "arrow.triangle.2.circlepath")
                     .padding()
@@ -163,22 +162,28 @@ struct ARTab: View {
                             
                             if let multimediaObject = multimediaObjectOptional {
                                 VStack(spacing: 0) {
-                                    if player != nil {
-                                        VideoPlayer(player: player)
-                                            .frame(width: 320, height: 180, alignment: .center)
-                                            .onDisappear {
-                                                player?.pause()
-                                            }
-                                    }
                                     List {
-                                        if detailImage != nil {
+                                        if player != nil {
+                                            VideoPlayer(player: player)
+                                                .frame(width: 320, height: 180, alignment: .center)
+                                                .cornerRadius(5, corners: [.allCorners])
+                                                .onDisappear {
+                                                    player?.pause()
+                                                }
+                                        } else if detailImage != nil {
                                             detailImage?
                                                 .resizable()
                                                 .zIndex(1)
                                                 .cornerRadius(5, corners: [.allCorners])
                                                 .aspectRatio(contentMode: .fill)
                                                 .clipped()
+                                        } else {
+                                            ProgressView()
+                                                .frame(width: 320, height: 180, alignment: .center)
+                                                .background(Color(UIColor.lightGray))
+                                                .cornerRadius(5, corners: [.allCorners])
                                         }
+                                        
                                         if multimediaObject.type == .text {
                                             HStack{
                                                 Text(multimediaObject.data ?? "")
@@ -204,6 +209,7 @@ struct ARTab: View {
                                     }
                                     Spacer()
                                 }
+                                .scrollContentBackground(.hidden)
                                 .padding()
                                 .padding(.top, 32.0)
                                 .onAppear(perform: {
@@ -355,12 +361,13 @@ extension ARTab {
         navigationObject = nil
         multimediaObjectData.activeTourObjectIndex = nil
         multimediaObjectData.activeTour = nil
-        nodes = []
-        polyNodes = []
+        nodes.removeAll()
+        polyNodes.removeAll()
+        polyline = nil
     }
     
     func resetArView() {
-        arDelegate.reset()
+        reset += 1
     }
     
     /**

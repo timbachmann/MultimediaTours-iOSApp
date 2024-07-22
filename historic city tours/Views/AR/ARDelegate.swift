@@ -19,6 +19,7 @@ class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
     var nodes: [SCNNode] = []
     var polyNodes: [SCNNode] = []
     var currLocation: CLLocation = CLLocation()
+    var reset: Int = 0
     
     
     func setARView(_ arView: ARSCNView) {
@@ -57,17 +58,17 @@ class ARDelegate: NSObject, ARSCNViewDelegate, ObservableObject {
     /**
      
      */
-    func reset() {
-        if let arView = arView {
-            arView.session.pause()
-            arView.scene.rootNode.enumerateChildNodes { (node, stop) in
-                node.removeFromParentNode()
-            }
-            let configuration = ARWorldTrackingConfiguration()
-            configuration.worldAlignment = .gravityAndHeading
-            configuration.planeDetection = .horizontal
-            arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+    func reset(view: ARSCNView) {
+        view.session.pause()
+        view.scene.rootNode.enumerateChildNodes { (node, stop) in
+            node.removeFromParentNode()
         }
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.worldAlignment = .gravityAndHeading
+        configuration.planeDetection = .horizontal
+        view.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        updateNodes(view: view)
+        updatePolyNodes(view: view)
     }
     
     

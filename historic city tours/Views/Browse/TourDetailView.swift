@@ -30,9 +30,8 @@ struct TourDetailView: View {
     @State private var showUploadProgress: Bool = false
     @State private var zoomOnLocation: Bool = false
     @State private var changeMapType: Bool = false
-    @State private var applyAnnotations: Bool = false
-    @State private var applyRoute: Bool = false
-    @State private var polylines: [MKPolyline?] = []
+    @State private var annotations: [CustomPointAnnotation] = []
+    @State private var polylines: [MKPolyline] = []
     @State private var coordinateRegion = MKCoordinateRegion.init(center: CLLocationCoordinate2D(latitude: CLLocationManager().location?.coordinate.latitude ?? 47.559_601, longitude: CLLocationManager().location?.coordinate.longitude ?? 7.588_576), span: MKCoordinateSpan(latitudeDelta: 0.0051, longitudeDelta: 0.0051))
     
     @State private var TagColors: Array<Color> = [
@@ -45,7 +44,7 @@ struct TourDetailView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            MapViewDetail(activeTour: $tour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, applyRoute: $applyRoute, polylines: $polylines, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
+            MapViewDetail(activeTour: $tour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, annotations: $annotations, polylines: $polylines, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
                         .frame(maxHeight: 250)
             
             List {
@@ -134,11 +133,32 @@ extension TourDetailView {
             }
         }
         isFetching = false
-        applyAnnotations = true
-        //fetchRoute()
+        addAnnotations()
+        fetchRoute()
+    }
+    
+    func addAnnotations() {
+        var tempAnnotations: [CustomPointAnnotation] = []
+        var index = 1
+        
+        for mmObjectId in tour.multimediaObjects! {
+            let mmObject = multimediaObjectData.getMultimediaObject(id: mmObjectId)
+            
+            if mmObject?.position != nil && mmObject != nil {
+                let annotation = CustomPointAnnotation(coordinate: CLLocationCoordinate2D(latitude: mmObject!.position!.lat, longitude: mmObject!.position!.lng), title: "(\(index)) " + mmObject!.title!, subtitle: mmObject!.source!, id: mmObject!.id!)
+                
+                tempAnnotations.append(annotation)
+            }
+            index += 1
+        }
+        
+        annotations.removeAll()
+        annotations.append(contentsOf: tempAnnotations)
     }
     
     func fetchRoute() {
+        var tempPolylines: [MKPolyline] = []
+        polylines.removeAll()
         let dispatchGroup = DispatchGroup()
         var positions: [MKMapItem] = []
         
@@ -173,12 +193,13 @@ extension TourDetailView {
                 }
             }
             dispatchGroup.notify(queue: .main) {
-                applyRoute = true
+                polylines.append(contentsOf: tempPolylines)
             }
             
         } else {
             dispatchGroup.notify(queue: .main) {
                 zoomOnLocation = true
+                polylines.removeAll()
             }
         }
     }

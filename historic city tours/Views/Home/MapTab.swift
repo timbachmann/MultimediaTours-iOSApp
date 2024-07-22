@@ -33,21 +33,20 @@ struct MapTab: View {
     @State private var showUploadProgress: Bool = false
     @State private var zoomOnLocation: Bool = false
     @State private var changeMapType: Bool = false
-    @State private var applyAnnotations: Bool = false
+    @State private var annotations: [CustomPointAnnotation] = []
+    @State private var polylines: [MKPolyline] = []
     @State private var showCamera: Bool = false
     @State private var includePublic: Bool = false
     @State private var radius: Double = 2.0
     @State private var startDate: Date = Date(timeIntervalSince1970: -3155673600.0)
     @State private var endDate: Date = Date()
     @State private var queryText: String = ""
-    @State private var applyRoute: Bool = false
-    @State private var polylines: [MKPolyline?] = []
     @State private var coordinateRegion = MKCoordinateRegion.init(center: CLLocationCoordinate2D(latitude: CLLocationManager().location?.coordinate.latitude ?? 47.559_601, longitude: CLLocationManager().location?.coordinate.longitude ?? 7.588_576), span: MKCoordinateSpan(latitudeDelta: 0.0051, longitudeDelta: 0.0051))
     
     var body: some View {
         NavigationView {
             ZStack(alignment: .top) {
-                MapView(activeTour: $multimediaObjectData.activeTour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, applyAnnotations: $applyAnnotations, applyRoute: $applyRoute, polylines: $polylines, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
+                MapView(activeTour: $multimediaObjectData.activeTour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, annotations: $annotations, polylines: $polylines, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
                     .edgesIgnoringSafeArea(.top)
                 
                 VStack {
@@ -114,8 +113,8 @@ struct MapTab: View {
                             Button(action: {
                                 multimediaObjectData.activeTourObjectIndex = nil
                                 multimediaObjectData.activeTour = nil
-                                //applyRoute = true
-                                applyAnnotations = true
+                                annotations.removeAll()
+                                polylines.removeAll()
                             }, label: {
                                 Image(systemName: "xmark")
                                     .padding()
@@ -158,8 +157,8 @@ struct MapTab: View {
         .edgesIgnoringSafeArea(.top)
         .onAppear(perform: {
             requestNotificationAuthorization()
-            applyAnnotations = true
-            //fetchRoute()
+            addAnnotations()
+            fetchRoute()
         })
     }
 }
@@ -207,6 +206,8 @@ extension MapTab {
     }
     
     func fetchRoute() {
+        var tempPolylines: [MKPolyline] = []
+        polylines.removeAll()
         if $multimediaObjectData.activeTour.wrappedValue != nil {
             let dispatchGroup = DispatchGroup()
             var positions: [MKMapItem] = []
@@ -243,16 +244,35 @@ extension MapTab {
                     guard let mapRoute = response?.routes.first else {
                         return
                     }
-                    polylines.append(mapRoute.polyline)
+                    tempPolylines.append(mapRoute.polyline)
                 }
             }
             
             dispatchGroup.notify(queue: .main) {
-                applyRoute = true
+                polylines.append(contentsOf: tempPolylines)
             }
         } else {
-            applyRoute = true
+            polylines.removeAll()
         }
+    }
+    
+    func addAnnotations() {
+        var tempAnnotations: [CustomPointAnnotation] = []
+        var index = 1
+        
+        for mmObjectId in multimediaObjectData.activeTour?.multimediaObjects! ?? [] {
+            let mmObject = multimediaObjectData.getMultimediaObject(id: mmObjectId)
+            
+            if mmObject?.position != nil && mmObject != nil {
+                let annotation = CustomPointAnnotation(coordinate: CLLocationCoordinate2D(latitude: mmObject!.position!.lat, longitude: mmObject!.position!.lng), title: "(\(index)) " + mmObject!.title!, subtitle: mmObject!.source!, id: mmObject!.id!)
+                
+                tempAnnotations.append(annotation)
+            }
+            index += 1
+        }
+        
+        annotations.removeAll()
+        annotations.append(contentsOf: tempAnnotations)
     }
 }
 

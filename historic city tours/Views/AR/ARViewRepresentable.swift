@@ -20,6 +20,7 @@ struct ARViewRepresentable: UIViewRepresentable {
     @Binding var nodes: [SCNNode]
     @Binding var polyNodes: [SCNNode]
     @Binding var currLocation: CLLocation
+    @Binding var reset: Int
     
     
     func makeUIView(context: Context) -> ARSCNView {
@@ -55,6 +56,13 @@ struct ARViewRepresentable: UIViewRepresentable {
         if (currLocation != arDelegate.currLocation) {
             DispatchQueue.main.async {
                 arDelegate.setCurrLocation(newLocation: currLocation)
+            }
+        }
+        
+        if (reset != arDelegate.reset) {
+            DispatchQueue.main.async {
+                arDelegate.reset = reset
+                arDelegate.reset(view: uiView)
             }
         }
         
