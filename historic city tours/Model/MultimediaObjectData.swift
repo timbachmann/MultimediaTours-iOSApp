@@ -7,7 +7,10 @@
 
 import Foundation
 import Combine
+import MapKit
+import AVFoundation
 import OpenAPIClient
+import SwiftUI
 
 /**
  Observable class image data to represent current images and images to upload.
@@ -16,8 +19,11 @@ import OpenAPIClient
 class MultimediaObjectData: ObservableObject {
     @Published var activeTour: TourResponse? = nil
     @Published var activeTourObjectIndex: Int? = nil
+    @Published var activeTourObjectCount: Int? = nil
     @Published var multimediaObjects: [MultimediaObjectResponse] = []
     @Published var tours: [TourResponse] = []
+    @Published var isLoading: Bool = false
+    @State private var placeholderList: [TourResponse] = [TourResponse(generated: false), TourResponse(generated: false), TourResponse(generated: false), TourResponse(generated: true), TourResponse(generated: true), TourResponse(generated: true)]
     
     /**
      Initialize images by loading from cache
@@ -27,6 +33,7 @@ class MultimediaObjectData: ObservableObject {
             if let retrievedData = data {
                 self.tours = retrievedData
                 self.tours.sort(by: { $0.title ?? "a" < $1.title ?? "b" })
+                self.isLoading = false
             }
         }
         
@@ -77,6 +84,8 @@ class MultimediaObjectData: ObservableObject {
     }
     
     func loadAllTours(completion: @escaping (_ data: [TourResponse]?, _ error: String?) -> ())  {
+        self.isLoading = true
+        self.tours = placeholderList
         self.loadAllToursFromCache() { (response, error) in
             if error != nil {
                 ToursAPI.toursGet() { (response, error) in
@@ -90,10 +99,13 @@ class MultimediaObjectData: ObservableObject {
     }
     
     func refreshTours() {
+        self.isLoading = true
+        self.tours = placeholderList
         ToursAPI.toursGet() { (response, error) in
             if let retrievedData = response {
                 self.tours = retrievedData
                 self.tours.sort(by: { $0.title ?? "a" < $1.title ?? "b" })
+                self.isLoading = false
                 self.saveToursToFile()
             }
         }
@@ -228,9 +240,8 @@ class MultimediaObjectData: ObservableObject {
             } catch {
                 DispatchQueue.main.async {
                     FilesAPI.multimediaObjectsFileIdGet(id: id) { (response, error) in
-                        completion(response!.path(), error.debugDescription)
+                        completion(response?.path(), error.debugDescription)
                     }
-                    
                 }
             }
         }
@@ -277,5 +288,103 @@ class MultimediaObjectData: ObservableObject {
      */
     func getCacheDirectoryPath() -> URL {
         return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+    }
+    
+    
+    /**
+     Schedules notifications for all images with a location trigger.
+     */
+    func createNotifications(oldTour: TourResponse?, newTour: TourResponse?) {
+        print("CREATE NOTIFICATIONS")
+        if let oldTour = oldTour {
+            let oldTourMultimediaObjects = oldTour.multimediaObjects
+            
+            if let oldTourMultimediaObjects = oldTourMultimediaObjects {
+                var identifiersToRemove: [String] = []
+                
+                for oldTourObjectId in oldTourMultimediaObjects {
+                    identifiersToRemove.append(oldTourObjectId + "_" + "arexplorer")
+                }
+                
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
+                CLLocationManager().monitoredRegions.forEach { region in
+                    if region is CLCircularRegion {
+                        if identifiersToRemove.contains(where: { $0 == region.identifier }) {
+                            CLLocationManager().stopMonitoring(for: region)
+                        }
+                    }
+                }
+            }
+        }
+        
+        if let activeTour = newTour {
+            let tourMultimediaObjects = activeTour.multimediaObjects
+            
+            if let tourMultimediaObjects = tourMultimediaObjects {
+                for objectId in tourMultimediaObjects {
+                    let notificationIdentifier = objectId + "_" + "arexplorer"
+                    UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
+                    CLLocationManager().monitoredRegions.forEach { region in
+                      if region is CLCircularRegion {
+                          if region.identifier == notificationIdentifier {
+                              CLLocationManager().stopMonitoring(for: region)
+                          }
+                      }
+                    }
+                    
+                    let object = getMultimediaObject(id: objectId)
+                    
+                    if let objectPosition = object?.position {
+                        let location = CLLocation(latitude: objectPosition.lat, longitude: objectPosition.lng)
+                        
+                        let content = UNMutableNotificationContent()
+                        content.title = "Tour Object in Range"
+                        content.subtitle = "Click to view in AR"
+                        content.body = String(format: "50m")
+                        content.sound = UNNotificationSound.default
+                        content.badge = 1
+                        content.categoryIdentifier = "ARExplorer"
+                        content.userInfo = ["customDataKey": "cusom_data_value"]
+                        
+                        let region = CLCircularRegion(center: location.coordinate, radius: 50.0, identifier: notificationIdentifier)
+                        region.notifyOnEntry = true
+                        region.notifyOnExit = false
+                        let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
+                        let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
+                        
+                        if let objectType = object?.type {
+                            if objectType == .image {
+                                getFileForMultimediaObject(id: objectId) { path, error in
+                                    if let path = path {
+                                        let url = URL(string: path)
+                                        
+                                        if let url = url {
+                                            let attachment = try! UNNotificationAttachment(identifier: objectId + "_" + "file", url: url)
+                                            content.attachments = [attachment]
+                                        }
+                                    }
+                                    
+                                    // 3. Create the Request
+                                    UNUserNotificationCenter.current().add(request) { error in
+                                        
+                                        guard error == nil else { return }
+                                        
+                                        print("Notification scheduled! — ID = \(objectId)")
+                                    }
+                                }
+                            } else {
+                                // 3. Create the Request
+                                UNUserNotificationCenter.current().add(request) { error in
+                                    
+                                    guard error == nil else { return }
+                                    
+                                    print("Notification scheduled! — ID = \(objectId)")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

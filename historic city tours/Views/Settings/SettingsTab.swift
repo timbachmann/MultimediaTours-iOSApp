@@ -23,6 +23,9 @@ struct SettingsTab: View {
                 Section(header: Label("Server Address", systemImage: "icloud")) {
                     HStack {
                         Image(systemName: "link.icloud")
+                            .font(.system(size: 20))
+                            .foregroundColor(Color.fireOrange)
+                            
                         TextField(settingsModel.serverAddress, text: $serverAddress, onCommit: {
                             settingsModel.serverAddress = serverAddress
                             settingsModel.saveSettingsToFile()

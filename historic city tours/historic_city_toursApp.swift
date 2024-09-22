@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct historic_city_toursApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var imageData = MultimediaObjectData()
     @StateObject private var locationManagerModel = LocationManagerModel()
     @StateObject private var settingsModel = SettingsModel()

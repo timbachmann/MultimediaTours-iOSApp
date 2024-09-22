@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var showGeneratedTour = false
     @State private var generatedTour: TourResponse? = nil
     @EnvironmentObject var multimediaObjectData: MultimediaObjectData
+    let pub = NotificationCenter.default.publisher(for: Notification.Name("ARExplorer"))
     
     public enum Tab {
         case map, browse, ar, empty, settings
@@ -65,6 +66,11 @@ struct ContentView: View {
                         }
                         .tag(Tab.settings)
                 }
+            }
+            .onReceive(pub) { data in
+                 if data.object is UNNotificationContent {
+                     selectedTab = .ar
+                 }
             }
             Button {
                 $showingGeneratePanel.wrappedValue.toggle()

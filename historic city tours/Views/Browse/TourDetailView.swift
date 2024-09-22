@@ -34,14 +34,6 @@ struct TourDetailView: View {
     @State private var polylines: [MKPolyline] = []
     @State private var coordinateRegion = MKCoordinateRegion.init(center: CLLocationCoordinate2D(latitude: CLLocationManager().location?.coordinate.latitude ?? 47.559_601, longitude: CLLocationManager().location?.coordinate.longitude ?? 7.588_576), span: MKCoordinateSpan(latitudeDelta: 0.0051, longitudeDelta: 0.0051))
     
-    @State private var TagColors: Array<Color> = [
-        Color.tag1,
-        Color.tag2,
-        Color.tag3,
-        Color.tag4,
-        Color.tag5,
-    ]
-    
     var body: some View {
         VStack(spacing: 0) {
             MapViewDetail(activeTour: $tour, selectedTab: $selectedTab, showDetail: $showDetail, detailId: $detailId, zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, annotations: $annotations, polylines: $polylines, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
@@ -74,7 +66,7 @@ struct TourDetailView: View {
                                     .padding(.horizontal, 4.0)
                                     .padding(.vertical, 2.0)
                                     .font(.system(size: 12))
-                                    .background(TagColors[Int.random(in: 0..<TagColors.count)])
+                                    .background(Color.tag)
                                     .cornerRadius(3.0, corners: .allCorners)
                             }
                         }
@@ -85,7 +77,7 @@ struct TourDetailView: View {
                     Section(header: Text("Multimedia-Objects")) {
                         ForEach($multimediaObjects.wrappedValue, id: \.self) { mmO in
                             NavigationLink(destination: {
-                                MultimediaObjectDetailView(multimediaObject: mmO)
+                                MultimediaObjectDetailView(selectedTab: $selectedTab, multimediaObject: mmO)
                             }, label: {
                                 HStack {
                                     Text(mmO.title ?? "")
@@ -108,6 +100,10 @@ struct TourDetailView: View {
                 Button(action: {
                     $multimediaObjectData.activeTour.wrappedValue = tour
                     $multimediaObjectData.activeTourObjectIndex.wrappedValue = 0
+                    
+                    if let mmObjects = tour.multimediaObjects {
+                        $multimediaObjectData.activeTourObjectCount.wrappedValue = mmObjects.count
+                    }
                     $selectedTab.wrappedValue = .map
                 }, label: {
                     HStack{

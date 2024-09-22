@@ -160,6 +160,9 @@ struct MapTab: View {
             addAnnotations()
             fetchRoute()
         })
+        .onChange(of: $multimediaObjectData.activeTour.wrappedValue) { oldTour, newTour in
+            multimediaObjectData.createNotifications(oldTour: oldTour, newTour: newTour)
+        }
     }
 }
 

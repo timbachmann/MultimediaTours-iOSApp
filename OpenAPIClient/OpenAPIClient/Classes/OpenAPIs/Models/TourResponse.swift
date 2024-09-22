@@ -10,7 +10,7 @@ import Foundation
 import AnyCodable
 #endif
 
-public struct TourResponse: Codable, JSONEncodable, Hashable, Identifiable {
+public struct TourResponse: Codable, JSONEncodable, Hashable, Identifiable, Equatable {
 
     public var id: String?
     public var title: String?
@@ -28,6 +28,16 @@ public struct TourResponse: Codable, JSONEncodable, Hashable, Identifiable {
         self.author = author
         self.generated = generated
         self.tags = tags
+    }
+    
+    public init(generated: Bool? = nil) {
+        self.id = UUID().uuidString
+        self.title = ""
+        self.source = ""
+        self.multimediaObjects = []
+        self.author = ""
+        self.generated = generated
+        self.tags = []
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {

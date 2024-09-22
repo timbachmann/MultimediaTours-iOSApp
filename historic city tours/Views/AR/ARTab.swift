@@ -21,13 +21,18 @@ struct ARTab: View {
     @Binding var selectedTab: ContentView.Tab
     @ObservedObject var arDelegate = ARDelegate()
     
+    let timer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+    
     @State private var detailImage: Image?
     @State private var player: AVPlayer?
     @State var polyline: MKPolyline? = nil
     @State var directionsRequestSent: Bool = false
     @State var showDetailPanel: Bool = false
+    @State var showFinishPanel: Bool = false
     @State var currLocation: CLLocation = CLLocation()
     @State var navigationObject: MultimediaObjectResponse? = nil
+    @State var navigationObjectFilePath: String? = nil
+    @State var tourObjectTitles: [String] = []
     @State var nodes: [SCNNode] = []
     @State var polyNodes: [SCNNode] = []
     @State var reset: Int = 0
@@ -76,7 +81,7 @@ struct ARTab: View {
                             .padding(.bottom, 64.0)
                         
                         VStack(spacing: 0) {
-                            if multimediaObjectData.activeTourObjectIndex != nil {
+                            if multimediaObjectData.activeTourObjectIndex != nil && !showDetailPanel && !showFinishPanel {
                                 // ABORT Button
                                 Button(action: {
                                     abortTour()
@@ -108,7 +113,7 @@ struct ARTab: View {
                 }
                 Spacer()
                 HStack (alignment: .center, spacing: 0) {
-                    if multimediaObjectData.activeTourObjectIndex != nil {
+                    if multimediaObjectData.activeTourObjectIndex != nil && !showFinishPanel {
                         // PREVIOUS Button
                         Button(action: {
                             previousTourItem()
@@ -119,6 +124,7 @@ struct ARTab: View {
                         .frame(width: 48.0, height: 48.0)
                         .background(Color(UIColor.systemBackground).opacity(0.95))
                         .cornerRadius(10.0, corners: [.topLeft, .bottomLeft])
+                        .disabled(multimediaObjectData.activeTourObjectIndex ?? 0 <= 0)
                         
                         Divider()
                             .frame(width: 1.0, height: 48.0)
@@ -138,16 +144,29 @@ struct ARTab: View {
                             .frame(width: 1.0, height: 48.0)
                             .background(Color(UIColor.systemBackground).opacity(0.95))
                         
-                        // NEXT Button
-                        Button(action: {
-                            nextTourItem()
-                        }, label: {
-                            Image(systemName: "forward")
-                                .foregroundColor(Color.accentColor)
-                        })
-                        .frame(width: 48.0, height: 48.0)
-                        .background(Color(UIColor.systemBackground).opacity(0.95))
-                        .cornerRadius(10.0, corners: [.bottomRight, .topRight])
+                        // NEXT or FINISH Button
+                        if (multimediaObjectData.activeTourObjectIndex ?? 0) + 1 < multimediaObjectData.activeTourObjectCount ?? 0 {
+                            Button(action: {
+                                nextTourItem()
+                            }, label: {
+                                Image(systemName: "forward")
+                                    .foregroundColor(Color.accentColor)
+                            })
+                            .frame(width: 48.0, height: 48.0)
+                            .background(Color(UIColor.systemBackground).opacity(0.95))
+                            .cornerRadius(10.0, corners: [.bottomRight, .topRight])
+                        } else {
+                            Button(action: {
+                                loadObjectTitles()
+                                $showFinishPanel.wrappedValue.toggle()
+                            }, label: {
+                                Image(systemName: "flag.checkered")
+                                    .foregroundColor(Color.accentColor)
+                            })
+                            .frame(width: 48.0, height: 48.0)
+                            .background(Color(UIColor.systemBackground).opacity(0.95))
+                            .cornerRadius(10.0, corners: [.bottomRight, .topRight])
+                        }
                     }
                 }
                 .padding(.bottom, settingsModel.debugMode == true ? 96.0 : 8.0)
@@ -239,10 +258,58 @@ struct ARTab: View {
                 .cornerRadius(10.0, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
                 .offset(x: 0.0, y: 40)
             }
+            if $showFinishPanel.wrappedValue == true {
+                ZStack {
+                    if let totalObjects = multimediaObjectData.activeTourObjectCount {
+                        VStack(spacing: 0) {
+                            VStack() {
+                                Text("Congratulations!")
+                                    .font(.title)
+                                    .foregroundStyle(Color.fireOrange)
+                                Text("You explored \(totalObjects) exiting places in this tour.")
+                            }
+                            List {
+                                ForEach(Array(tourObjectTitles.enumerated()), id: \.offset) { index, title in
+                                    HStack() {
+                                        Text("\(index + 1).")
+                                        Text(title)
+                                    }
+                                }
+                            }
+                            .scrollContentBackground(.hidden)
+                            .padding()
+                            
+                            Button(action: {
+                                $showFinishPanel.wrappedValue.toggle()
+                                abortTour()
+                            }, label: {
+                                HStack {
+                                    Text("End Tour")
+                                        .foregroundColor(Color.white)
+                                    Image(systemName: "flag.checkered")
+                                        .foregroundColor(Color.white)
+                                }
+                            })
+                            .frame(width: 150, height: 48.0)
+                            .background(Color.fireOrange)
+                            .cornerRadius(10.0, corners: [.allCorners])
+                            
+                        }
+                        .padding(24.0)
+                    }
+                }
+                .frame(width: 340, height: 480)
+                .background(Color(UIColor.systemBackground).opacity(0.95))
+                .cornerRadius(10.0, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
+                .offset(x: 0.0, y: 40)
+            }
         }
         .edgesIgnoringSafeArea(.top)
-        .onChange(of: locationManagerModel.location) { oldLocation, newLocation in
-            newLocationUpdate(newLocation: newLocation)
+        .onReceive(timer) { time in
+            if multimediaObjectData.activeTour == nil {
+                timer.upstream.connect().cancel()
+            }
+            resetArView()
         }
         .onAppear(perform: {
             initArView()
@@ -266,6 +333,7 @@ extension ARTab {
                 navigationObject = multimediaObject
                 if let multimediaObject = multimediaObject {
                     multimediaObjectData.getFileForMultimediaObject(id: multimediaObject.id!) { filePath, error in
+                        navigationObjectFilePath = filePath
                         loadImageNodes(object: multimediaObject, filePath: filePath)
                         loadRoute(object: multimediaObject)
                     }
@@ -289,12 +357,13 @@ extension ARTab {
                 if let multimediaObject = multimediaObjectOptional {
                     multimediaObjectData.getFileForMultimediaObject(id: multimediaObject.id!) { filePath, error in
                         navigationObject = multimediaObject
+                        navigationObjectFilePath = filePath
                         loadImageNodes(object: multimediaObject, filePath: filePath)
                         if !directionsRequestSent {
                             loadRoute(object: multimediaObject)
                         }
                         if multimediaObject.position == nil || multimediaObject.position?.lat == nil || multimediaObject.position?.lng == nil {
-                            $showDetailPanel.wrappedValue.toggle()
+                            showDetailPanel = true
                         }
                     }
                 }
@@ -303,10 +372,21 @@ extension ARTab {
         }
     }
     
-    func newLocationUpdate(newLocation: CLLocation?) {
-        if let newLocation = newLocation {
-            if newLocation.distance(from: currLocation) >= 50.0 {
-                currLocation = newLocation
+    func newLocationUpdate(oldLocation: CLLocation?, newLocation: CLLocation?) {
+        if let oldLocation = oldLocation {
+            if let newLocation = newLocation {
+                if newLocation.distance(from: currLocation) >= 10.0 
+                    || ((oldLocation.horizontalAccuracy > newLocation.horizontalAccuracy)
+                        && (oldLocation.verticalAccuracy > newLocation.verticalAccuracy)) {
+                    currLocation = newLocation
+                    
+                    if let navigationObject = navigationObject {
+                        if let navigationObjectFilePath = navigationObjectFilePath {
+                            loadImageNodes(object: navigationObject, filePath: navigationObjectFilePath)
+                            loadRoute(object: navigationObject)
+                        }
+                    }
+                }
             }
         }
     }
@@ -335,6 +415,22 @@ extension ARTab {
         }
     }
     
+    func loadObjectTitles() {
+        var titles: [String] = []
+        if let tour = multimediaObjectData.activeTour {
+                if let objects = multimediaObjectData.activeTour?.multimediaObjects {
+                    for object in objects {
+                        let multimediaObjectOptional = multimediaObjectData.getMultimediaObject(id: object)
+                        
+                        if let multimediaObjectTitle = multimediaObjectOptional?.title {
+                            titles.append(multimediaObjectTitle)
+                        }
+                    }
+                }
+        }
+        tourObjectTitles = titles
+    }
+    
     func previousTourItem() {
         if let index = multimediaObjectData.activeTourObjectIndex {
             if index - 1 >= 0 {
@@ -360,6 +456,7 @@ extension ARTab {
     func abortTour() {
         navigationObject = nil
         multimediaObjectData.activeTourObjectIndex = nil
+        multimediaObjectData.activeTourObjectCount = nil
         multimediaObjectData.activeTour = nil
         nodes.removeAll()
         polyNodes.removeAll()
@@ -382,15 +479,13 @@ extension ARTab {
                 if distance < 50 {
                     switch type {
                         case .image:
-                        createImageNode(mmObject: object, location: nodeLocation, filePath: filePath)
+                            createImageNode(mmObject: object, location: nodeLocation, filePath: filePath)
                         case .video:
-                        createVideoNode(mmObject: object, location: nodeLocation, filePath: filePath)
+                            createVideoNode(mmObject: object, location: nodeLocation, filePath: filePath)
                         case .audio:
-                            //$showDetailPage.wrappedValue.toggle()
-                            break
+                            $showDetailPanel.wrappedValue.toggle()
                         case .text:
-                            //$showDetailPage.wrappedValue.toggle()
-                            break
+                            $showDetailPanel.wrappedValue.toggle()
                         default:
                             return
                     }
@@ -399,6 +494,8 @@ extension ARTab {
                     createIndicatorNode(mmObject: object, location: nodeLocation, distance: distance)
                 }
             }
+        } else {
+            $showDetailPanel.wrappedValue.toggle()
         }
     }
     
@@ -408,61 +505,39 @@ extension ARTab {
     func createImageNode(mmObject: MultimediaObjectResponse, location: CLLocation, filePath: String?) {
         if let filePath = filePath {
             let imageUI = UIImage(contentsOfFile: filePath)
-            var width: CGFloat = 0
-            var height: CGFloat = 0
-            let finalYaw = (mmObject.position?.yaw ?? 0.0) - 90.0
-            let finalBearing = mmObject.position?.bearing ?? 0
-            
-            //        if (historicIds.contains(image.id)) {
-            //            finalYaw += 90
-            //            finalBearing = (finalBearing + 180) % 360
-            //        }
-            //
-            //        if image.pitch == -1.0 {
-            //            width = imageUI.size.width
-            //            height = imageUI.size.height
-            //            finalBearing -= 90
-            //
-            //        } else if image.pitch == 1.0 {
-            //            width = imageUI.size.width
-            //            height = imageUI.size.height
-            //            finalBearing += 90
-            //
-            //        } else {
-            //            if (!historicIds.contains(image.id)) {
-            //                width = imageUI.size.height
-            //                height = imageUI.size.width
-            //            } else {
-            //                width = imageUI.size.width
-            //                height = imageUI.size.height
-            //            }
-            //        }
             
             if let imageUI = imageUI {
-                width = imageUI.size.width
-                height = imageUI.size.height
+                let width: CGFloat = imageUI.size.width
+                let height: CGFloat = imageUI.size.height
+                let ratio: CGFloat = width / height
+                let finalYaw = mmObject.position?.yaw ?? 0.0
+                let finalBearing = mmObject.position?.bearing ?? 0
+               
+                let scnPlane = SCNPlane(width: 4.5 * ratio, height: 4.5)
+                let imageNode = SCNNode(geometry: scnPlane)
+                imageNode.name = mmObject.id
+                imageNode.geometry?.firstMaterial?.diffuse.contents = correctlyOrientatedImage(imageUI)
+                imageNode.geometry?.firstMaterial?.isDoubleSided = true
+                
+                imageNode.worldPosition = translateNode(location, altitude: 0.0)
+                
+                let currentOrientation = GLKQuaternionMake(imageNode.orientation.x, imageNode.orientation.y, imageNode.orientation.z, imageNode.orientation.w)
+                let bearingRotation = GLKQuaternionMakeWithAngleAndAxis(GLKMathDegreesToRadians(-Float(finalBearing)), 0, 1, 0)
+                let yawRotation = GLKQuaternionMakeWithAngleAndAxis(GLKMathDegreesToRadians(finalYaw), 0, 0, 1)
+                let finalOrientation = GLKQuaternionMultiply(GLKQuaternionMultiply(currentOrientation, bearingRotation), yawRotation)
+                imageNode.orientation = SCNQuaternion(finalOrientation.x, finalOrientation.y, finalOrientation.z, finalOrientation.w)
+                
+                nodes.removeAll(where: { _ in nodes.contains(where: { $0.name == imageNode.name}) })
+                nodes.append(imageNode)
             }
-            
-            let scnPlane = SCNPlane(width: width*0.0008, height: height*0.0008)
-            let imageNode = SCNNode(geometry: scnPlane)
-            imageNode.geometry?.firstMaterial?.diffuse.contents = imageUI
-            imageNode.geometry?.firstMaterial?.isDoubleSided = true
-            
-            imageNode.worldPosition = translateNode(location, altitude: 0.0)
-            
-            let currentOrientation = GLKQuaternionMake(imageNode.orientation.x, imageNode.orientation.y, imageNode.orientation.z, imageNode.orientation.w)
-            let bearingRotation = GLKQuaternionMakeWithAngleAndAxis(GLKMathDegreesToRadians(-Float(finalBearing)), 0, 1, 0)
-            let yawRotation = GLKQuaternionMakeWithAngleAndAxis(GLKMathDegreesToRadians(finalYaw), 0, 0, 1)
-            let finalOrientation = GLKQuaternionMultiply(GLKQuaternionMultiply(currentOrientation, bearingRotation), yawRotation)
-            imageNode.orientation = SCNQuaternion(finalOrientation.x, finalOrientation.y, finalOrientation.z, finalOrientation.w)
-            
-            nodes.append(imageNode)
         }
     }
     
     func createVideoNode(mmObject: MultimediaObjectResponse, location: CLLocation, filePath: String?) {
         if let filePath = filePath {
             let player = AVPlayer(url: URL(filePath: filePath))
+            let finalYaw = mmObject.position?.yaw ?? 0.0
+            let finalBearing = mmObject.position?.bearing ?? 0
             
             let videoAsset = AVURLAsset(url : URL(filePath: filePath))
             let videoAssetTrack = videoAsset.tracks(withMediaType: .video).first
@@ -473,22 +548,25 @@ extension ARTab {
             videoNode.position = CGPoint(x: videoScene.size.width / 2, y: videoScene.size.height / 2)
             videoNode.yScale = -1.0
             videoScene.addChild(videoNode)
+            let ratio = videoScene.size.width / videoScene.size.height
             
-            let plane = SCNPlane(width: videoScene.size.width/100, height: videoScene.size.width/100)
+            let plane = SCNPlane(width: 4.5 * ratio, height: 4.5)
             plane.firstMaterial?.diffuse.contents = videoScene
             let planeNode = SCNNode(geometry: plane)
+            planeNode.name = mmObject.id
             
             planeNode.geometry?.firstMaterial?.diffuse.contents = videoScene
             planeNode.geometry?.firstMaterial?.isDoubleSided = true
             
             planeNode.worldPosition = translateNode(location, altitude: 0.0)
             
-//                let currentOrientation = GLKQuaternionMake(planeNode.orientation.x, planeNode.orientation.y, planeNode.orientation.z, planeNode.orientation.w)
-//                let bearingRotation = GLKQuaternionMakeWithAngleAndAxis(GLKMathDegreesToRadians(-Float(finalBearing)), 0, 1, 0)
-//                let yawRotation = GLKQuaternionMakeWithAngleAndAxis(GLKMathDegreesToRadians(finalYaw), 0, 0, 1)
-//                let finalOrientation = GLKQuaternionMultiply(GLKQuaternionMultiply(currentOrientation, bearingRotation), yawRotation)
-//                planeNode.orientation = SCNQuaternion(finalOrientation.x, finalOrientation.y, finalOrientation.z, finalOrientation.w)
+            let currentOrientation = GLKQuaternionMake(planeNode.orientation.x, planeNode.orientation.y, planeNode.orientation.z, planeNode.orientation.w)
+            let bearingRotation = GLKQuaternionMakeWithAngleAndAxis(GLKMathDegreesToRadians(-Float(finalBearing)), 0, 1, 0)
+            let yawRotation = GLKQuaternionMakeWithAngleAndAxis(GLKMathDegreesToRadians(finalYaw), 0, 0, 1)
+            let finalOrientation = GLKQuaternionMultiply(GLKQuaternionMultiply(currentOrientation, bearingRotation), yawRotation)
+            planeNode.orientation = SCNQuaternion(finalOrientation.x, finalOrientation.y, finalOrientation.z, finalOrientation.w)
             
+            nodes.removeAll(where: { _ in nodes.contains(where: { $0.name == planeNode.name}) })
             nodes.append(planeNode)
         }
         
@@ -516,6 +594,7 @@ extension ARTab {
         
         let scnPlane = SCNPlane(width: 3.0, height: 2.0)
         let imageNode = SCNNode(geometry: scnPlane)
+        imageNode.name = mmObject.id
         imageNode.geometry?.firstMaterial?.diffuse.contents = skScene
         imageNode.geometry?.firstMaterial?.isDoubleSided = true
         
@@ -526,6 +605,7 @@ extension ARTab {
         let yFreeConstraint = SCNBillboardConstraint()
         imageNode.constraints = [yFreeConstraint]
         
+        nodes.removeAll(where: { _ in nodes.contains(where: { $0.name == imageNode.name}) })
         nodes.append(imageNode)
     }
     
@@ -578,6 +658,8 @@ extension ARTab {
                 polyNodes.removeAll()
                 polyNodes.append(contentsOf: tempNodes)
             }
+        } else {
+            polyNodes.removeAll()
         }
     }
     
@@ -606,6 +688,19 @@ extension ARTab {
         let currCameraTransform = arDelegate.cameraTransform ?? matrix_identity_float4x4
         let locationTransform = GeometryUtils.transformMatrixWithDistance(currCameraTransform, locationManagerModel.location, location, distance)
         return SCNVector3Make(locationTransform.columns.3.x, locationTransform.columns.3.y + Float(altitude), locationTransform.columns.3.z)
+    }
+    
+    func correctlyOrientatedImage(_ image: UIImage) -> UIImage {
+        if (image.imageOrientation == .up) { return image }
+
+        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
+        let rect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        image.draw(in: rect)
+
+        let normalizedImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+
+        return normalizedImage
     }
 }
 

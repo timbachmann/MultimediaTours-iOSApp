@@ -13,14 +13,6 @@ struct BrowseTab: View {
     @EnvironmentObject var multimediaObjectData: MultimediaObjectData
     @State private var searchText = ""
     
-    @State private var TagColors: Array<Color> = [
-        Color.tag1,
-        Color.tag2,
-        Color.tag3,
-        Color.tag4,
-        Color.tag5,
-    ]
-    
     var body: some View {
         ZStack {
             if $multimediaObjectData.tours.isEmpty {
@@ -38,20 +30,23 @@ struct BrowseTab: View {
                     }, label: {
                         VStack(alignment: .leading, spacing: 6.0) {
                             Text(tour.title.wrappedValue ?? "Tour")
+                                .redacted(reason: $multimediaObjectData.isLoading.wrappedValue ? .placeholder : [])
                             HStack {
                                 ForEach(tour.tags.wrappedValue ?? [], id: \.self) { tag in
                                     Text(tag)
                                         .padding(.horizontal, 4.0)
                                         .padding(.vertical, 2.0)
                                         .font(.system(size: 12))
-                                        .background(TagColors[Int.random(in: 0..<TagColors.count)])
+                                        .background(Color.tag)
                                         .cornerRadius(3.0, corners: .allCorners)
+                                        .redacted(reason: $multimediaObjectData.isLoading.wrappedValue ? .placeholder : [])
                                 }
                                 Spacer()
                             }
                         }
                         
                     })
+                    .disabled($multimediaObjectData.isLoading.wrappedValue)
                 }
                 
                 Section(header: Label("Generated Tours", systemImage: "wand.and.stars")) {
@@ -61,20 +56,23 @@ struct BrowseTab: View {
                         }, label: {
                             VStack(alignment: .leading, spacing: 6.0) {
                                 Text(tour.title.wrappedValue ?? "Tour")
+                                    .redacted(reason: $multimediaObjectData.isLoading.wrappedValue ? .placeholder : [])
                                 HStack {
                                     ForEach(tour.tags.wrappedValue ?? [], id: \.self) { tag in
                                         Text(tag)
                                             .padding(.horizontal, 4.0)
                                             .padding(.vertical, 2.0)
                                             .font(.system(size: 12))
-                                            .background(TagColors[Int.random(in: 0..<TagColors.count)])
+                                            .background(Color.tag)
                                             .cornerRadius(3.0, corners: .allCorners)
+                                            .redacted(reason: $multimediaObjectData.isLoading.wrappedValue ? .placeholder : [])
                                     }
                                     Spacer()
                                 }
                             }
                             
                         })
+                        .disabled($multimediaObjectData.isLoading.wrappedValue)
                     }
                 }.headerProminence(.increased)
             }
@@ -84,30 +82,45 @@ struct BrowseTab: View {
             }
             .searchable(text: $searchText)
         }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    
-                }, label: {
-                    Image(systemName: "line.3.horizontal.decrease")
-                        .foregroundColor(Color.accentColor)
-                })
-            }
+        .onAppear(perform: {
+            requestNotificationAuthorization()
+        })
+        .onChange(of: $multimediaObjectData.activeTour.wrappedValue) { oldTour, newTour in
+            multimediaObjectData.createNotifications(oldTour: oldTour, newTour: newTour)
         }
     }
     
     var searchResults: Binding<[TourResponse]> {
-            if searchText.isEmpty {
-                return $multimediaObjectData.tours
-            } else {
-                return $multimediaObjectData.tours.filter {
-                    $0.title?.contains(searchText) ?? false ||
-                    $0.source?.contains(searchText) ?? false ||
-                    $0.author?.contains(searchText) ?? false
-                }
+        if searchText.isEmpty {
+            return $multimediaObjectData.tours
+        } else {
+            return $multimediaObjectData.tours.filter {
+                $0.title?.contains(searchText) ?? false ||
+                $0.source?.contains(searchText) ?? false ||
+                $0.author?.contains(searchText) ?? false ||
+                $0.tags?.contains(where: { $0.contains(searchText.lowercased()) }) ?? false
             }
         }
+    }
 }
+
+extension BrowseTab {
+    
+    /**
+     Requests authorization to send notifications
+     */
+    func requestNotificationAuthorization() {
+        
+        let nc = UNUserNotificationCenter.current()
+        let options: UNAuthorizationOptions = [.alert, .sound, .badge]
+        
+        nc.requestAuthorization(options: options) { granted, _ in
+            print("\(#function) Permission granted: \(granted)")
+            guard granted else { return }
+        }
+    }
+}
+
 
 extension Binding where Value: MutableCollection, Value: RangeReplaceableCollection, Value.Element: Identifiable {
   func filter(_ isIncluded: @escaping (Value.Element)->Bool) -> Binding<[Value.Element]> {

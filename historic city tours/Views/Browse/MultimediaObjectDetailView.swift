@@ -8,32 +8,30 @@
 import SwiftUI
 import OpenAPIClient
 import AVKit
+import MapKit
 
 struct MultimediaObjectDetailView: View {
+    @Binding var selectedTab: ContentView.Tab
     @State var multimediaObject: MultimediaObjectResponse
     @EnvironmentObject var multimediaObjectData: MultimediaObjectData
     @State private var detailImage: Image?
     @State private var player: AVPlayer?
-    
-    @State private var TagColors: Array<Color> = [
-        Color.tag1,
-        Color.tag2,
-        Color.tag3,
-        Color.tag4,
-        Color.tag5,
-    ]
+    @State private var mapType: MKMapType = .standard
+    @State private var zoomOnLocation: Bool = false
+    @State private var changeMapType: Bool = false
+    @State private var annotations: [CustomPointAnnotation] = []
+    @State private var coordinateRegion = MKCoordinateRegion.init(center: CLLocationCoordinate2D(latitude: CLLocationManager().location?.coordinate.latitude ?? 47.559_601, longitude: CLLocationManager().location?.coordinate.longitude ?? 7.588_576), span: MKCoordinateSpan(latitudeDelta: 0.0051, longitudeDelta: 0.0051))
     
     var body: some View {
         VStack{
-            if player != nil {
-                VideoPlayer(player: player)
-                    .frame(width: 320, height: 180, alignment: .center)
-                    .onDisappear {
-                        player?.pause()
-                    }
-            }
             List {
-                if detailImage != nil {
+                if player != nil {
+                    VideoPlayer(player: player)
+                        .frame(width: 320, height: 180, alignment: .center)
+                        .onDisappear {
+                            player?.pause()
+                        }
+                } else if detailImage != nil {
                     HStack{
                         Spacer()
                         detailImage?
@@ -45,6 +43,21 @@ struct MultimediaObjectDetailView: View {
                         
                         Spacer()
                     }.padding([.top, .bottom], 14.0)
+                } else {
+                    HStack{
+                        Spacer()
+                        Image(systemName: "photo")
+                            .font(.system(size: 250))
+                            .frame(height: 220)
+                            .zIndex(1)
+                            .cornerRadius(5, corners: [.allCorners])
+                            .aspectRatio(contentMode: .fit)
+                            .clipped()
+                        
+                        Spacer()
+                    }
+                    .padding([.top, .bottom], 14.0)
+                    .redacted(reason: .placeholder)
                 }
                 if multimediaObject.type == .text {
                     HStack{
@@ -54,10 +67,8 @@ struct MultimediaObjectDetailView: View {
                 }
                 if multimediaObject.position != nil {
                     Section(header: Text("Position")) {
-                        HStack{
-                            Text("\($multimediaObject.position.wrappedValue?.lat ?? 0.0), \($multimediaObject.position.wrappedValue?.lng ?? 0.0)")
-                            Spacer()
-                        }
+                        MapViewObjectDetail(mmObject: $multimediaObject, selectedTab: $selectedTab,  zoomOnLocation: $zoomOnLocation, changeMapType: $changeMapType, annotations: $annotations, region: coordinateRegion, mapType: mapType, showsUserLocation: true, userTrackingMode: .follow)
+                                    .frame(height: 200)
                     }
                 }
                 if $multimediaObject.source.wrappedValue != nil {
@@ -85,7 +96,7 @@ struct MultimediaObjectDetailView: View {
                                     .padding(.horizontal, 4.0)
                                     .padding(.vertical, 2.0)
                                     .font(.system(size: 12))
-                                    .background(TagColors[Int.random(in: 0..<TagColors.count)])
+                                    .background(Color.tag)
                                     .cornerRadius(3.0, corners: .allCorners)
                             }
                         }
@@ -125,6 +136,13 @@ extension MultimediaObjectDetailView {
                     }
                 }
             }
+        }
+        
+        if let position = $multimediaObject.wrappedValue.position {
+            let annotation = CustomPointAnnotation(coordinate: CLLocationCoordinate2D(latitude: position.lat, longitude: position.lng), title: $multimediaObject.wrappedValue.title!, subtitle: $multimediaObject.wrappedValue.source!, id: $multimediaObject.wrappedValue.id!)
+            
+            annotations.removeAll()
+            annotations.append(annotation)
         }
     }
 }

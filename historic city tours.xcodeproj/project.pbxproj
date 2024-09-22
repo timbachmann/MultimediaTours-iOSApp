@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		220ABBDB2C9EE96200EEDA53 /* MapViewObjectDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220ABBDA2C9EE96200EEDA53 /* MapViewObjectDetail.swift */; };
+		220ABBE52C9F063D00EEDA53 /* Barfusserplatz.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 220ABBE42C9F063000EEDA53 /* Barfusserplatz.gpx */; };
+		2214E0DF2C50ED27000D3687 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2214E0DE2C50ED27000D3687 /* AppDelegate.swift */; };
 		22179B202BFD345B00FF0417 /* CustomPointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B1C2BFD345B00FF0417 /* CustomPointAnnotation.swift */; };
 		22179B252BFD3E4F00FF0417 /* MapViewDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */; };
 		22179B272BFD43A800FF0417 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22179B262BFD43A800FF0417 /* UIImage+Extension.swift */; };
@@ -37,6 +40,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		220ABBDA2C9EE96200EEDA53 /* MapViewObjectDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewObjectDetail.swift; sourceTree = "<group>"; };
+		220ABBE42C9F063000EEDA53 /* Barfusserplatz.gpx */ = {isa = PBXFileReference; lastKnownFileType = text; path = Barfusserplatz.gpx; sourceTree = "<group>"; };
+		2214E0DE2C50ED27000D3687 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		22179B1C2BFD345B00FF0417 /* CustomPointAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomPointAnnotation.swift; sourceTree = "<group>"; };
 		22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewDetail.swift; sourceTree = "<group>"; };
 		22179B262BFD43A800FF0417 /* UIImage+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
@@ -111,6 +117,7 @@
 			children = (
 				222FA2D92BFB85E900686FAE /* Launch Screen.storyboard */,
 				22C548AB2BE8DC1B00DC1427 /* Location.gpx */,
+				220ABBE42C9F063000EEDA53 /* Barfusserplatz.gpx */,
 				229DAE092B952DCF0018FCB4 /* historic city tours */,
 				229DAE082B952DCF0018FCB4 /* Products */,
 				22C548B12BE8DFA500DC1427 /* Frameworks */,
@@ -136,6 +143,7 @@
 				229DAE0E2B952DD00018FCB4 /* Assets.xcassets */,
 				229DAE102B952DD00018FCB4 /* Preview Content */,
 				22FB1B8A2BFB67D5006D94F2 /* Color+Extension.swift */,
+				2214E0DE2C50ED27000D3687 /* AppDelegate.swift */,
 			);
 			path = "historic city tours";
 			sourceTree = "<group>";
@@ -195,6 +203,7 @@
 				22C548CA2BE91CA300DC1427 /* TourDetailView.swift */,
 				22C548CC2BE92B0900DC1427 /* MultimediaObjectDetailView.swift */,
 				22179B242BFD3E4F00FF0417 /* MapViewDetail.swift */,
+				220ABBDA2C9EE96200EEDA53 /* MapViewObjectDetail.swift */,
 			);
 			path = Browse;
 			sourceTree = "<group>";
@@ -275,6 +284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				229DAE122B952DD00018FCB4 /* Preview Assets.xcassets in Resources */,
+				220ABBE52C9F063D00EEDA53 /* Barfusserplatz.gpx in Resources */,
 				22C548AC2BE8DC1B00DC1427 /* Location.gpx in Resources */,
 				222FA2DA2BFB85E900686FAE /* Launch Screen.storyboard in Resources */,
 				229DAE0F2B952DD00018FCB4 /* Assets.xcassets in Resources */,
@@ -288,6 +298,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2214E0DF2C50ED27000D3687 /* AppDelegate.swift in Sources */,
 				223813A32C04D72D007C7C2D /* SettingsTab.swift in Sources */,
 				22179B202BFD345B00FF0417 /* CustomPointAnnotation.swift in Sources */,
 				22C548CD2BE92B0900DC1427 /* MultimediaObjectDetailView.swift in Sources */,
@@ -309,6 +320,7 @@
 				229DAE0B2B952DCF0018FCB4 /* historic_city_toursApp.swift in Sources */,
 				2238139D2C04C9A4007C7C2D /* ARViewRepresentable.swift in Sources */,
 				2238139C2C04C9A4007C7C2D /* RadarView.swift in Sources */,
+				220ABBDB2C9EE96200EEDA53 /* MapViewObjectDetail.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -424,7 +436,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -441,7 +453,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"historic city tours/Preview Content\"";
 				DEVELOPMENT_TEAM = 883GXF926S;
 				ENABLE_PREVIEWS = YES;
@@ -480,7 +492,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"historic city tours/Preview Content\"";
 				DEVELOPMENT_TEAM = 883GXF926S;
 				ENABLE_PREVIEWS = YES;

@@ -50,4 +50,8 @@ class LocationManagerModel: NSObject, ObservableObject, CLLocationManagerDelegat
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestAlwaysAuthorization()
     }
+    
+    func getLocationManager() -> CLLocationManager {
+        return locationManager
+    }
 }

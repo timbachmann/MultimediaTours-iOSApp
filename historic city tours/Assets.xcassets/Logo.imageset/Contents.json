@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Logo Kopie.png",
+      "filename" : "logo-white.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -12,7 +12,7 @@
           "value" : "light"
         }
       ],
-      "filename" : "LogoLight.png",
+      "filename" : "logo.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -23,7 +23,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "LogoDark.png",
+      "filename" : "logo-dark.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
